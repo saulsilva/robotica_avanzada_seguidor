@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía de Práctica - Robótica Educativa</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            mono: ['Space Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(34,197,94,0.2); } 50% { box-shadow: 0 0 40px rgba(34,197,94,0.4); } }
+    .anim-slide { animation: slideUp 0.6s ease-out both; }
+    .anim-fade { animation: fadeIn 0.8s ease-out both; }
+    .glow-green { animation: pulseGlow 3s ease-in-out infinite; }
+    .section-card { backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.06); }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(34,197,94,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,197,94,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .corner-accent::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 24px;
+      background: linear-gradient(180deg, #22c55e, transparent);
+      border-radius: 2px;
+    }
+    .corner-accent::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 24px; height: 3px;
+      background: linear-gradient(90deg, #22c55e, transparent);
+      border-radius: 2px;
+    }
+    .chip-yellow { background: linear-gradient(135deg, #facc15 0%, #eab308 100%); }
+    .chip-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .chip-green { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+    .chip-red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    .step-num {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-[#0a0f1a] font-outfit overflow-auto">
+  <div id="app-wrapper" class="w-full min-h-full grid-bg" style="background-color: #0a0f1a;"><!-- Print Button -->
+   <div class="no-print fixed top-4 right-4 z-50"><button onclick="window.print()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-[#0a0f1a] chip-green shadow-lg hover:scale-105 transition-transform"> <i data-lucide="printer" style="width:16px;height:16px;"></i> Imprimir </button>
+   </div>
+   <div class="max-w-4xl mx-auto px-4 py-8 md:px-8 md:py-12"><!-- Header -->
+    <header class="anim-slide mb-8 text-center relative">
+     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 mb-4"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span> <span id="header-badge" class="text-green-400 text-xs font-mono tracking-widest uppercase">Robótica Educativa</span>
+     </div>
+     <h1 class="text-4xl md:text-6xl font-black tracking-tight leading-none mb-3"><span id="title-main" class="text-white">GUÍA DE</span><br><span id="title-accent" class="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">PRÁCTICA</span></h1>
+     <p id="header-subtitle" class="text-gray-500 font-mono text-sm mt-3">Seguidor de Línea · ESP32 · MakerSpace</p>
+    </header><!-- Practice Badge -->
+    <div class="anim-slide mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-3 p-5 rounded-2xl section-card bg-white/[0.03] relative corner-accent" style="animation-delay:0.1s;">
+     <div class="chip-yellow text-[#0a0f1a] font-black text-lg px-5 py-2 rounded-xl shadow-lg shadow-yellow-500/20">
+      PRÁCTICA <span id="practice-num">3</span>
+     </div>
+     <div class="flex-1">
+      <h2 id="practice-title" class="text-white font-bold text-xl md:text-2xl">Sensor Infrarrojo para Seguimiento de Línea</h2>
+      <p id="block-info" class="text-gray-500 text-sm font-mono mt-1">Bloque 2: Sensores y Actuadores</p>
+     </div>
+    </div><!-- Objective -->
+    <section class="anim-slide mb-6 p-5 rounded-2xl section-card bg-white/[0.03] relative corner-accent" style="animation-delay:0.15s;">
+     <div class="flex items-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center flex-shrink-0"><i data-lucide="target" style="width:20px;height:20px;color:#3b82f6;"></i>
+      </div>
+      <h3 class="text-blue-400 font-bold text-lg tracking-wide uppercase">Objetivo</h3>
+     </div>
+     <p id="objective-text" class="text-gray-300 leading-relaxed pl-[52px]">El alumno aprenderá a conectar y programar un sensor infrarrojo (IR) con el ESP32 para detectar líneas oscuras sobre superficies claras, comprendiendo los principios de reflexión de luz y señales digitales aplicados a la robótica móvil.</p>
+    </section><!-- Instructions -->
+    <section class="anim-slide mb-6 p-5 rounded-2xl section-card bg-white/[0.03] relative corner-accent" style="animation-delay:0.2s;">
+     <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl bg-green-500/15 flex items-center justify-center flex-shrink-0"><i data-lucide="list-ordered" style="width:20px;height:20px;color:#22c55e;"></i>
+      </div>
+      <h3 class="text-green-400 font-bold text-lg tracking-wide uppercase">Instrucciones</h3>
+     </div>
+     <div class="space-y-3 pl-[52px]" id="steps-container">
+      <div class="flex items-start gap-3">
+       <div class="step-num bg-green-500/15 text-green-400">
+        1
+       </div>
+       <p class="text-gray-300 pt-1">Identifica los pines VCC, GND y OUT del sensor infrarrojo TCRT5000.</p>
+      </div>
+      <div class="flex items-start gap-3">
+       <div class="step-num bg-green-500/15 text-green-400">
+        2
+       </div>
+       <p class="text-gray-300 pt-1">Conecta VCC a 3.3V y GND a tierra del ESP32.</p>
+      </div>
+      <div class="flex items-start gap-3">
+       <div class="step-num bg-green-500/15 text-green-400">
+        3
+       </div>
+       <p class="text-gray-300 pt-1">Conecta la salida digital (OUT) al pin GPIO 15 del ESP32.</p>
+      </div>
+      <div class="flex items-start gap-3">
+       <div class="step-num bg-green-500/15 text-green-400">
+        4
+       </div>
+       <p class="text-gray-300 pt-1">Abre Arduino IDE y carga el código proporcionado por el instructor.</p>
+      </div>
+      <div class="flex items-start gap-3">
+       <div class="step-num bg-green-500/15 text-green-400">
+        5
+       </div>
+       <p class="text-gray-300 pt-1">Observa la lectura del sensor en el Monitor Serial al pasar sobre líneas oscuras y claras.</p>
+      </div>
+      <div class="flex items-start gap-3">
+       <div class="step-num bg-green-500/15 text-green-400">
+        6
+       </div>
+       <p class="text-gray-300 pt-1">Ajusta el potenciómetro del sensor para calibrar la sensibilidad.</p>
+      </div>
+     </div>
+    </section><!-- Two Column: Components + Deliverable -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"><!-- Components -->
+     <section class="anim-slide p-5 rounded-2xl section-card bg-white/[0.03] relative corner-accent" style="animation-delay:0.25s;">
+      <div class="flex items-center gap-3 mb-4">
+       <div class="w-10 h-10 rounded-xl bg-yellow-500/15 flex items-center justify-center flex-shrink-0"><i data-lucide="cpu" style="width:20px;height:20px;color:#facc15;"></i>
+       </div>
+       <h3 class="text-yellow-400 font-bold text-lg tracking-wide uppercase">Componentes</h3>
+      </div>
+      <ul class="space-y-2 pl-[52px]">
+       <li class="flex items-center gap-2 text-gray-300"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0"></span>1× ESP32 DevKit V1</li>
+       <li class="flex items-center gap-2 text-gray-300"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0"></span>1× Sensor IR TCRT5000</li>
+       <li class="flex items-center gap-2 text-gray-300"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0"></span>1× Protoboard</li>
+       <li class="flex items-center gap-2 text-gray-300"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0"></span>5× Cables jumper M-M</li>
+       <li class="flex items-center gap-2 text-gray-300"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0"></span>1× Cable USB Tipo-C</li>
+       <li class="flex items-center gap-2 text-gray-300"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0"></span>1× Pista de prueba (línea negra)</li>
+      </ul>
+     </section><!-- Deliverable -->
+     <section class="anim-slide p-5 rounded-2xl section-card bg-white/[0.03] relative corner-accent" style="animation-delay:0.3s;">
+      <div class="flex items-center gap-3 mb-4">
+       <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center flex-shrink-0"><i data-lucide="upload-cloud" style="width:20px;height:20px;color:#a855f7;"></i>
+       </div>
+       <h3 class="text-purple-400 font-bold text-lg tracking-wide uppercase">Entregable</h3>
+      </div>
+      <ul class="space-y-3 pl-[52px]">
+       <li class="flex items-start gap-2 text-gray-300"><i data-lucide="camera" style="width:16px;height:16px;color:#a855f7;margin-top:4px;flex-shrink:0;"></i> <span>Fotografía del circuito armado y funcionando</span></li>
+       <li class="flex items-start gap-2 text-gray-300"><i data-lucide="video" style="width:16px;height:16px;color:#a855f7;margin-top:4px;flex-shrink:0;"></i> <span>Video corto (máx. 30s) mostrando la detección de línea</span></li>
+       <li class="flex items-start gap-2 text-gray-300"><i data-lucide="file-code" style="width:16px;height:16px;color:#a855f7;margin-top:4px;flex-shrink:0;"></i> <span>Código fuente (.ino) con comentarios</span></li>
+       <li class="flex items-start gap-2 text-gray-300"><i data-lucide="file-text" style="width:16px;height:16px;color:#a855f7;margin-top:4px;flex-shrink:0;"></i> <span>Captura del Monitor Serial con lecturas</span></li>
+      </ul>
+     </section>
+    </div><!-- Connection Diagram -->
+    <section class="anim-slide mb-6 p-5 rounded-2xl section-card bg-white/[0.03] relative corner-accent" style="animation-delay:0.35s;">
+     <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl bg-teal-500/15 flex items-center justify-center flex-shrink-0"><i data-lucide="git-branch" style="width:20px;height:20px;color:#14b8a6;"></i>
+      </div>
+      <h3 class="text-teal-400 font-bold text-lg tracking-wide uppercase">Esquema de Conexión</h3>
+     </div><!-- ASCII Diagram -->
+     <div class="ml-[52px] p-4 rounded-xl bg-[#0d1321] border border-teal-500/10 font-mono text-xs md:text-sm overflow-x-auto">
+      <pre class="text-teal-300 leading-relaxed">  ┌──────────────┐          ┌────────────────┐
+  │  SENSOR IR   │          │     ESP32      │
+  │  TCRT5000    │          │                │
+  │              │          │                │
+  │  VCC ●───────┼──────────┤ 3.3V           │
+  │  GND ●───────┼──────────┤ GND            │
+  │  OUT ●───────┼──────────┤ GPIO 15        │
+  │              │          │                │
+  └──────────────┘          └────────────────┘
+
+  ⚡ VCC → 3.3V  │  ⏚ GND → GND  │  📡 OUT → GPIO 15
+        </pre>
+     </div>
+     <p class="text-gray-500 text-xs mt-3 ml-[52px] italic">* Inserta aquí tu diagrama Fritzing o imagen del circuito real</p>
+    </section><!-- Success Criteria -->
+    <section class="anim-slide mb-6 p-5 rounded-2xl section-card bg-white/[0.03] glow-green relative corner-accent" style="animation-delay:0.4s;">
+     <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl bg-green-500/15 flex items-center justify-center flex-shrink-0"><i data-lucide="check-circle" style="width:20px;height:20px;color:#22c55e;"></i>
+      </div>
+      <h3 class="text-green-400 font-bold text-lg tracking-wide uppercase">Criterios de Éxito</h3>
+     </div>
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-[52px]">
+      <div class="flex items-center gap-2 p-3 rounded-xl bg-green-500/5 border border-green-500/10"><i data-lucide="check" style="width:16px;height:16px;color:#22c55e;flex-shrink:0;"></i> <span class="text-gray-300 text-sm">El sensor detecta líneas oscuras correctamente</span>
+      </div>
+      <div class="flex items-center gap-2 p-3 rounded-xl bg-green-500/5 border border-green-500/10"><i data-lucide="check" style="width:16px;height:16px;color:#22c55e;flex-shrink:0;"></i> <span class="text-gray-300 text-sm">Conexión eléctrica segura y ordenada</span>
+      </div>
+      <div class="flex items-center gap-2 p-3 rounded-xl bg-green-500/5 border border-green-500/10"><i data-lucide="check" style="width:16px;height:16px;color:#22c55e;flex-shrink:0;"></i> <span class="text-gray-300 text-sm">Código compila y carga sin errores</span>
+      </div>
+      <div class="flex items-center gap-2 p-3 rounded-xl bg-green-500/5 border border-green-500/10"><i data-lucide="check" style="width:16px;height:16px;color:#22c55e;flex-shrink:0;"></i> <span class="text-gray-300 text-sm">Monitor Serial muestra valores coherentes</span>
+      </div>
+      <div class="flex items-center gap-2 p-3 rounded-xl bg-green-500/5 border border-green-500/10"><i data-lucide="check" style="width:16px;height:16px;color:#22c55e;flex-shrink:0;"></i> <span class="text-gray-300 text-sm">Entregables completos y a tiempo</span>
+      </div>
+      <div class="flex items-center gap-2 p-3 rounded-xl bg-green-500/5 border border-green-500/10"><i data-lucide="check" style="width:16px;height:16px;color:#22c55e;flex-shrink:0;"></i> <span class="text-gray-300 text-sm">Código comentado y legible</span>
+      </div>
+     </div>
+    </section><!-- Tip -->
+    <section class="anim-slide mb-8 p-5 rounded-2xl bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 relative" style="animation-delay:0.45s;">
+     <div class="flex items-start gap-4">
+      <div class="w-12 h-12 rounded-xl chip-yellow flex items-center justify-center flex-shrink-0 shadow-lg shadow-yellow-500/20"><i data-lucide="lightbulb" style="width:24px;height:24px;color:#0a0f1a;"></i>
+      </div>
+      <div>
+       <h3 class="text-yellow-400 font-bold text-lg mb-1">CONSEJO</h3>
+       <p id="tip-text" class="text-yellow-200/80 leading-relaxed">Antes de cargar el código, verifica que el sensor esté a una distancia de 1-2 cm de la superficie. Si las lecturas son inestables, ajusta el potenciómetro lentamente hasta que el LED indicador del módulo responda con claridad al cambio entre blanco y negro.</p>
+      </div>
+     </div>
+    </section><!-- Footer -->
+    <footer class="anim-fade text-center pb-6" style="animation-delay:0.5s;">
+     <div class="flex items-center justify-center gap-3 mb-2">
+      <div class="h-px w-12 bg-gradient-to-r from-transparent to-green-500/30"></div><i data-lucide="bot" style="width:20px;height:20px;color:#22c55e;"></i>
+      <div class="h-px w-12 bg-gradient-to-l from-transparent to-green-500/30"></div>
+     </div>
+     <p class="text-gray-600 text-xs font-mono">ROBÓTICA EDUCATIVA · ESP32 · SEGUIDOR DE LÍNEA</p>
+     <p class="text-gray-700 text-xs mt-1">Documento generado para uso didáctico</p>
+    </footer>
+   </div>
+  </div>
+  <script>
+  const defaultConfig = {
+    background_color: '#0a0f1a',
+    surface_color: '#111827',
+    text_color: '#d1d5db',
+    primary_color: '#22c55e',
+    accent_color: '#facc15',
+    font_family: 'Outfit',
+    font_size: 16,
+    practice_number: '3',
+    practice_name: 'Sensor Infrarrojo para Seguimiento de Línea',
+    block_info: 'Bloque 2: Sensores y Actuadores',
+    objective_text: 'El alumno aprenderá a conectar y programar un sensor infrarrojo (IR) con el ESP32 para detectar líneas oscuras sobre superficies claras, comprendiendo los principios de reflexión de luz y señales digitales aplicados a la robótica móvil.',
+    tip_text: 'Antes de cargar el código, verifica que el sensor esté a una distancia de 1-2 cm de la superficie. Si las lecturas son inestables, ajusta el potenciómetro lentamente hasta que el LED indicador del módulo responda con claridad al cambio entre blanco y negro.'
+  };
+
+  function applyConfig(config) {
+    const c = key => config[key] || defaultConfig[key];
+    const font = c('font_family');
+    const base = c('font_size');
+
+    document.getElementById('app-wrapper').style.backgroundColor = c('background_color');
+    document.querySelectorAll('.section-card').forEach(el => {
+      el.style.backgroundColor = c('surface_color') + '15';
+    });
+    document.querySelectorAll('.text-gray-300, .text-gray-200').forEach(el => {
+      el.style.color = c('text_color');
+    });
+
+    document.body.style.fontFamily = `${font}, Outfit, sans-serif`;
+    document.getElementById('practice-num').textContent = c('practice_number');
+    document.getElementById('practice-title').textContent = c('practice_name');
+    document.getElementById('block-info').textContent = c('block_info');
+    document.getElementById('objective-text').textContent = c('objective_text');
+    document.getElementById('tip-text').textContent = c('tip_text');
+
+    document.getElementById('practice-title').style.fontSize = `${base * 1.5}px`;
+    document.getElementById('objective-text').style.fontSize = `${base}px`;
+    document.getElementById('tip-text').style.fontSize = `${base}px`;
+  }
+
+  if (window.elementSdk) {
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => applyConfig(config),
+      mapToCapabilities: (config) => {
+        const c = key => config[key] || defaultConfig[key];
+        const make = (key) => ({
+          get: () => c(key),
+          set: (v) => { config[key] = v; window.elementSdk.setConfig({ [key]: v }); }
+        });
+        return {
+          recolorables: [make('background_color'), make('surface_color'), make('text_color'), make('primary_color'), make('accent_color')],
+          borderables: [],
+          fontEditable: make('font_family'),
+          fontSizeable: { get: () => c('font_size'), set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+        };
+      },
+      mapToEditPanelValues: (config) => {
+        const c = key => config[key] || defaultConfig[key];
+        return new Map([
+          ['practice_number', c('practice_number')],
+          ['practice_name', c('practice_name')],
+          ['block_info', c('block_info')],
+          ['objective_text', c('objective_text')],
+          ['tip_text', c('tip_text')]
+        ]);
+      }
+    });
+  }
+
+  lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e8ec8f104e77ffc',t:'MTc3NTYyNTIyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
