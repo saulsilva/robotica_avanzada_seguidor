@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inna'at - Misión de Ingeniería</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
+  
+  <style>
+    :root { --accent: #22c55e; --bg: #0a0f1a; --surface: rgba(255,255,255,0.03); }
+    .print-mode { --bg: white; --text: black; --accent: #16a34a; }
+    
+    body { background-color: var(--bg); color: white; transition: all 0.4s ease; }
+    .print-mode { color: black !important; }
+    .print-mode .section-card { background: white !important; border: 1px solid #ddd !important; color: black !important; }
+    .print-mode .grid-bg { background-image: none !important; }
+    .print-mode input, .print-mode textarea { border-bottom: 1px solid #ccc !important; color: black !important; }
+    .print-mode .no-print { display: none !important; }
+
+    .grid-bg {
+      background-image: linear-gradient(rgba(34,197,94,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.03) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    .corner { border-left: 3px solid var(--accent); border-top: 3px solid var(--accent); }
+  </style>
+</head>
+
+<body class="font-outfit">
+  <div id="app-wrapper" class="w-full min-h-full grid-bg">
+    
+    <div class="no-print fixed top-6 right-6 z-50 flex gap-3">
+      <button onclick="togglePrintMode()" class="px-4 py-2 rounded-full bg-purple-600 font-bold text-xs shadow-xl hover:scale-110 transition-all">MODO PAPEL</button>
+      <button onclick="window.print()" class="px-4 py-2 rounded-full bg-green-500 text-black font-bold text-xs shadow-xl hover:scale-110 transition-all">IMPRIMIR</button>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-8 py-12">
+      
+      <header class="relative flex justify-between items-center mb-10 border-b border-white/10 pb-8">
+        <div class="flex items-center gap-6">
+          <img src="robotica/assets/mascota.png" alt="Mascota" class="w-24 h-24 object-contain">
+          <div>
+            <h1 class="text-5xl font-black tracking-tighter italic">GUÍA DE PRÁCTICA</h1>
+            <p class="text-green-400 font-mono tracking-widest text-sm uppercase">Robótica de Competencia & Ingeniería</p>
+          </div>
+        </div>
+        <img src="robotica/assets/innaat.png" alt="Inna'at" class="h-16 object-contain">
+      </header>
+
+      <section class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-white/[0.03] border border-white/10 mb-8 corner">
+        <div class="flex flex-col"><span class="text-[10px] text-green-400 font-bold">ALUMNO</span><input type="text" class="bg-transparent border-b border-white/20 outline-none py-1 text-sm"></div>
+        <div class="flex flex-col"><span class="text-[10px] text-green-400 font-bold">GRUPO</span><input type="text" class="bg-transparent border-b border-white/20 outline-none py-1 text-sm"></div>
+        <div class="flex flex-col"><span class="text-[10px] text-green-400 font-bold">FECHA</span><input type="text" class="bg-transparent border-b border-white/20 outline-none py-1 text-sm"></div>
+        <div class="flex flex-col"><span class="text-[10px] text-green-400 font-bold">ID MISIÓN</span><span class="text-xl font-black">{{PRACTICA_ID}}</span></div>
+      </section>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-8">
+          <section class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 section-card">
+            <h2 class="text-blue-400 font-bold flex items-center gap-2 mb-4"><i data-lucide="book-open"></i> MARCO TEÓRICO</h2>
+            <div class="text-gray-300 text-sm leading-relaxed">{{INTRO_TEORIA}}</div>
+          </section>
+
+          <section class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 section-card">
+            <h2 class="text-green-400 font-bold flex items-center gap-2 mb-4"><i data-lucide="cpu"></i> CÓDIGO Y LÓGICA</h2>
+            <div class="bg-black p-4 rounded-xl font-mono text-xs text-green-500 border border-green-500/20">
+              <textarea class="w-full h-48 bg-transparent outline-none resize-none" placeholder="# Escribe o pega tu código aquí...">{{CODIGO_BASE}}</textarea>
+            </div>
+          </section>
+        </div>
+
+        <div class="space-y-8">
+          <section class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 section-card">
+            <h2 class="text-yellow-400 font-bold mb-4">TABLA DE DATOS</h2>
+            <div class="space-y-4">
+              <div class="border-b border-white/10 pb-2"><span class="text-[10px] block text-gray-500">LECTURA 1</span><input type="text" class="bg-transparent outline-none w-full text-sm"></div>
+              <div class="border-b border-white/10 pb-2"><span class="text-[10px] block text-gray-500">LECTURA 2</span><input type="text" class="bg-transparent outline-none w-full text-sm"></div>
+            </div>
+          </section>
+
+          <section class="p-6 rounded-2xl bg-gradient-to-t from-purple-500/10 to-transparent border border-purple-500/20 section-card text-center">
+            <h2 class="text-purple-400 font-bold mb-4 flex justify-center items-center gap-2"><i data-lucide="brain"></i> CONCLUSIÓN</h2>
+            <textarea class="w-full h-32 bg-transparent text-sm border-none outline-none" placeholder="¿Qué aprendiste hoy?"></textarea>
+          </section>
+
+          <div class="flex justify-center pt-10">
+            <img src="robotica/assets/rikishi.png" alt="Rikishi" class="w-40 grayscale hover:grayscale-0 transition-all duration-700">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    function togglePrintMode() {
+      document.body.classList.toggle('print-mode');
+    }
+  </script>
+</body>
+</html>
