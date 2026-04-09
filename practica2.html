@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía de Ingeniería Inna'at - Master</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
+  
+  <style>
+    :root { --accent: #22c55e; --bg: #0a0f1a; --text: white; --card: rgba(255,255,255,0.03); }
+    
+    /* MODO PAPEL (Clase que se activa por JS) */
+    body.print-mode { --bg: white; --text: black; --accent: #16a34a; --card: #f9f9f9; }
+    
+    body { background-color: var(--bg); color: var(--text); transition: background-color 0.4s ease; }
+    
+    .grid-bg {
+      background-image: linear-gradient(rgba(34,197,94,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.04) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    body.print-mode .grid-bg { background-image: none !important; }
+
+    .section-card { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+    body.print-mode .section-card { border: 1px solid #ddd !important; }
+
+    /* Estilo de los inputs que cambian con el tema */
+    input, textarea { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.2); color: var(--text); outline: none; }
+    body.print-mode input, body.print-mode textarea { border-bottom: 1px solid #666 !important; }
+
+    /* Filtro para logos en modo papel */
+    body.print-mode img { filter: contrast(1.1) saturate(1.2); }
+
+    @media print { .no-print { display: none !important; } }
+  </style>
+</head>
+
+<body class="font-outfit">
+  <div id="app-wrapper" class="w-full min-h-full grid-bg">
+    
+    <div class="no-print fixed top-6 right-6 z-50 flex gap-3">
+      <button onclick="togglePrintMode()" class="px-5 py-2 rounded-xl bg-purple-600 font-bold text-xs text-white shadow-lg hover:scale-105 active:scale-95 transition-all">MODO PAPEL / NEÓN</button>
+      <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-green-500 font-bold text-xs text-black shadow-lg hover:scale-105 active:scale-95 transition-all">IMPRIMIR PDF</button>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      
+      <header class="flex flex-col md:flex-row justify-between items-center mb-10 border-b border-white/10 pb-8 gap-6">
+        <div class="flex items-center gap-6">
+          <img src="robotica/assets/mascota.html" alt="Mascota" class="w-28 h-28 object-contain">
+          <div>
+            <h1 class="text-5xl font-black italic tracking-tighter">GUÍA DE PRÁCTICA</h1>
+            <p class="text-green-400 font-mono text-sm tracking-widest uppercase">Robótica · {{NIVEL}} · {{PILAR}}</p>
+          </div>
+        </div>
+        <img src="robotica/assets/innaat.html" alt="Inna'at" class="h-16 object-contain">
+      </header>
+
+      <section class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6 section-card mb-8">
+        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Estudiante</label><input type="text"></div>
+        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Grupo</label><input type="text"></div>
+        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Fecha</label><input type="text"></div>
+        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Práctica</label><span class="text-2xl font-black">#{{PRACTICA_ID}}</span></div>
+      </section>
+
+      <div class="mb-8 p-6 section-card bg-green-500/5 border-l-4 border-l-green-500">
+        <h2 class="text-2xl md:text-3xl font-bold italic uppercase">{{TITULO_TEMA}}</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-8">
+          
+          <section class="p-6 section-card">
+            <h3 class="text-blue-400 font-bold flex items-center gap-2 mb-3 uppercase tracking-wider"><i data-lucide="target"></i> Objetivo</h3>
+            <p class="text-sm leading-relaxed">{{INTRO_TEORIA}}</p>
+          </section>
+
+          <section class="p-6 section-card">
+            <h3 class="text-green-400 font-bold flex items-center gap-2 mb-4 uppercase tracking-wider"><i data-lucide="list-checks"></i> Instrucciones</h3>
+            <div class="space-y-3 text-sm">
+              {{PASOS_LISTA}} </div>
+          </section>
+
+          <section class="p-6 section-card">
+            <h3 class="text-teal-400 font-bold flex items-center gap-2 mb-4 uppercase tracking-wider"><i data-lucide="git-branch"></i> Esquema de Conexión</h3>
+            <pre class="bg-black/40 p-4 rounded-xl font-mono text-xs text-teal-300 overflow-x-auto border border-teal-500/20">{{DIAGRAMA_ASCII}}</pre>
+          </section>
+        </div>
+
+        <div class="space-y-8">
+          
+          <section class="p-6 section-card border-l-4 border-l-yellow-500">
+            <h3 class="text-yellow-400 font-bold flex items-center gap-2 mb-4 uppercase"><i data-lucide="cpu"></i> Componentes</h3>
+            <ul class="text-sm space-y-2 opacity-80">{{LISTA_COMPONENTES}}</ul>
+          </section>
+
+          <section class="p-6 section-card bg-white/[0.02]">
+            <h3 class="text-orange-400 font-bold mb-4 uppercase flex items-center gap-2"><i data-lucide="table"></i> Resultados</h3>
+            <div class="space-y-4">
+              <div class="flex flex-col gap-1"><span class="text-[10px] text-gray-500">MEDICIÓN / OBSERVACIÓN</span><input type="text" class="w-full"></div>
+              <div class="flex flex-col gap-1"><span class="text-[10px] text-gray-500">ESTADO FINAL</span><input type="text" class="w-full"></div>
+            </div>
+          </section>
+
+          <section class="p-6 section-card border-l-4 border-l-purple-500">
+            <h3 class="text-purple-400 font-bold mb-3 uppercase flex items-center gap-2"><i data-lucide="brain"></i> Conclusión</h3>
+            <textarea class="w-full h-24 text-sm bg-transparent border-none p-0" placeholder="¿Qué descubriste?"></textarea>
+          </section>
+
+          <div class="flex flex-col items-center gap-4 pt-4">
+            <img src="robotica/assets/rikishi.png" alt="Rikishi" class="w-40 drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+            <p class="text-[10px] font-mono opacity-30 uppercase tracking-[0.3em]">Protocolo de Competencia</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    function togglePrintMode() {
+      document.body.classList.toggle('print-mode');
+      // Re-crear iconos para asegurar visibilidad en cambio de tema
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
