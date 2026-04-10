@@ -1,131 +1,761 @@
-<!doctype html>
+<<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guía de Ingeniería Inna'at - Master</title>
+  <title>Inna'at · P-01 El multímetro y la Ley de Ohm</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
-    :root { --accent: #22c55e; --bg: #0a0f1a; --text: white; --card: rgba(255,255,255,0.03); }
-    
-    /* MODO PAPEL (Clase que se activa por JS) */
-    body.print-mode { --bg: white; --text: black; --accent: #16a34a; --card: #f9f9f9; }
-    
-    body { background-color: var(--bg); color: var(--text); transition: background-color 0.4s ease; }
-    
-    .grid-bg {
-      background-image: linear-gradient(rgba(34,197,94,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.04) 1px, transparent 1px);
-      background-size: 30px 30px;
+    /* ── BASE ── */
+    :root {
+      --accent:   #22c55e;
+      --accent2:  #16a34a;
+      --bg:       #0a0f1a;
+      --bg2:      #0d1526;
+      --card:     rgba(255,255,255,0.03);
+      --border:   rgba(255,255,255,0.08);
+      --text:     #ffffff;
+      --muted:    rgba(255,255,255,0.55);
+      --navy:     #1F3864;
     }
-    body.print-mode .grid-bg { background-image: none !important; }
+    body.paper {
+      --accent:  #16a34a;
+      --accent2: #15803d;
+      --bg:      #f8fafc;
+      --bg2:     #f1f5f9;
+      --card:    #ffffff;
+      --border:  #e2e8f0;
+      --text:    #0f172a;
+      --muted:   #64748b;
+    }
 
-    .section-card { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
-    body.print-mode .section-card { border: 1px solid #ddd !important; }
+    * { box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; transition: background 0.35s, color 0.35s; }
 
-    /* Estilo de los inputs que cambian con el tema */
-    input, textarea { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.2); color: var(--text); outline: none; }
-    body.print-mode input, body.print-mode textarea { border-bottom: 1px solid #666 !important; }
+    /* ── GRID BG ── */
+    .grid-bg {
+      background-image: radial-gradient(var(--accent) 0.5px, transparent 0.5px);
+      background-size: 26px 26px; opacity: 0.07;
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      transition: opacity 0.35s;
+    }
+    body.paper .grid-bg { opacity: 0.03; }
 
-    /* Filtro para logos en modo papel */
-    body.print-mode img { filter: contrast(1.1) saturate(1.2); }
+    /* ── CARDS ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: background 0.35s, border 0.35s;
+    }
+    body.paper .card { background: #ffffff; border-color: #e2e8f0; box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
 
-    @media print { .no-print { display: none !important; } }
+    /* ── BADGE ── */
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; font-family: 'Space Mono', monospace; }
+
+    /* ── SECTION TITLE ── */
+    .sec-title { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+
+    /* ── FORMULA BOX ── */
+    .formula-box {
+      background: linear-gradient(135deg, rgba(34,197,94,.12), rgba(34,197,94,.04));
+      border: 1.5px solid rgba(34,197,94,.3);
+      border-radius: 16px; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    body.paper .formula-box { background: #f0fdf4; border-color: #86efac; }
+    .formula-box .eq { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; color: var(--accent); }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+    .flow-step {
+      background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2);
+      border-radius: 10px; padding: 8px 14px;
+      font-size: 11px; font-weight: 600; text-align: center; color: var(--text);
+      flex-shrink: 0;
+    }
+    body.paper .flow-step { background: #f0fdf4; border-color: #86efac; }
+    .flow-arrow { color: var(--accent); font-size: 18px; padding: 0 4px; flex-shrink: 0; }
+
+    /* ── MODE TABS: Tinkercad / Físico ── */
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .mode-tab {
+      padding: 7px 18px; border-radius: 10px; font-size: 12px; font-weight: 700;
+      cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s;
+      font-family: 'Space Mono', monospace;
+    }
+    .mode-tab.tk  { border-color: rgba(59,130,246,.4); color: #60a5fa; background: rgba(59,130,246,.08); }
+    .mode-tab.fis { border-color: rgba(251,146,60,.4); color: #fb923c; background: rgba(251,146,60,.08); }
+    .mode-tab.active.tk  { background: rgba(59,130,246,.2); border-color: #60a5fa; }
+    .mode-tab.active.fis { background: rgba(251,146,60,.2); border-color: #fb923c; }
+    .mode-content { display: none; }
+    .mode-content.active { display: block; animation: fadeIn .3s ease; }
+    body.paper .mode-tab.tk  { background:#eff6ff; border-color:#bfdbfe; color:#2563eb; }
+    body.paper .mode-tab.fis { background:#fff7ed; border-color:#fed7aa; color:#ea580c; }
+    body.paper .mode-tab.active.tk  { background:#dbeafe; }
+    body.paper .mode-tab.active.fis { background:#ffedd5; }
+
+    /* ── CARRUSEL MEJORADO ── */
+    .carousel-wrap { position: relative; }
+    .carousel-slide { display: none; animation: slideIn .4s ease-out; }
+    .carousel-slide.active { display: grid; }
+
+    /* Progress bar */
+    .progress-bar-track { height: 3px; background: var(--border); border-radius: 999px; margin-bottom: 16px; }
+    .progress-bar-fill  { height: 3px; background: var(--accent); border-radius: 999px; transition: width .4s ease; }
+
+    /* Thumbnails */
+    .thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .thumb {
+      width: 52px; height: 38px; border-radius: 8px; cursor: pointer;
+      border: 2px solid transparent; overflow: hidden; flex-shrink: 0;
+      background: rgba(255,255,255,.05); transition: border-color .2s, transform .2s;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted);
+    }
+    .thumb:hover { transform: scale(1.05); }
+    .thumb.active { border-color: var(--accent); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    body.paper .thumb { background: #f1f5f9; border-color: #e2e8f0; }
+    body.paper .thumb.active { border-color: var(--accent); }
+
+    /* Nav buttons */
+    .carousel-btn {
+      width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: var(--card); color: var(--text); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s; flex-shrink: 0;
+    }
+    .carousel-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .carousel-btn:disabled { opacity: .3; cursor: default; }
+    body.paper .carousel-btn { background: #fff; border-color: #e2e8f0; }
+
+    /* ── RESULTS TABLE ── */
+    .rtable { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .rtable th { padding: 9px 12px; background: rgba(34,197,94,.1); color: var(--accent); font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; text-align: left; border-bottom: 1px solid rgba(34,197,94,.2); }
+    .rtable td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--muted); }
+    .rtable tr:last-child td { border-bottom: none; }
+    .rtable input { background: transparent; border: none; border-bottom: 1px dashed var(--border); width: 100%; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 12px; outline: none; padding: 2px 0; }
+    .rtable input:focus { border-bottom-color: var(--accent); }
+    body.paper .rtable th { background: #f0fdf4; border-color: #86efac; color: #16a34a; }
+    body.paper .rtable td { border-color: #e2e8f0; color: #475569; }
+    body.paper .rtable input { color: #0f172a; border-color: #cbd5e1; }
+
+    /* ── ERROR CARDS ── */
+    .err-card {
+      background: rgba(239,68,68,.06); border: 1px solid rgba(239,68,68,.2);
+      border-radius: 14px; padding: 14px; display: flex; gap: 12px; align-items: flex-start;
+    }
+    body.paper .err-card { background: #fef2f2; border-color: #fecaca; }
+    .err-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(239,68,68,.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* ── RETO CARDS ── */
+    .reto-int { background: rgba(168,85,247,.08); border: 1px solid rgba(168,85,247,.2); border-radius: 16px; padding: 18px; }
+    .reto-adv { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); border-radius: 16px; padding: 18px; }
+    body.paper .reto-int { background: #faf5ff; border-color: #d8b4fe; }
+    body.paper .reto-adv { background: #fffbeb; border-color: #fcd34d; }
+
+    /* ── ROBOT APPLICATION ── */
+    .robot-app { background: linear-gradient(135deg, rgba(31,56,100,.5), rgba(31,56,100,.2)); border: 1px solid rgba(31,56,100,.6); border-radius: 16px; padding: 18px; }
+    body.paper .robot-app { background: #eff6ff; border-color: #bfdbfe; }
+
+    /* ── TEXTAREA ── */
+    textarea { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; outline: none; resize: vertical; width: 100%; transition: border-color .2s; }
+    textarea:focus { border-color: var(--accent); }
+    textarea::placeholder { color: var(--muted); }
+    body.paper textarea { background: #f8fafc; border-color: #e2e8f0; color: #0f172a; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes slideIn { from { opacity:0; transform:translateX(24px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+    @keyframes revealUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    .rev { animation: revealUp .55s ease both; }
+    .rev-1 { animation-delay:.05s; } .rev-2 { animation-delay:.1s; }
+    .rev-3 { animation-delay:.15s; } .rev-4 { animation-delay:.2s; }
+    .rev-5 { animation-delay:.25s; } .rev-6 { animation-delay:.3s; }
+    .rev-7 { animation-delay:.35s; } .rev-8 { animation-delay:.4s; }
+
+    /* ── PRINT ── */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff; color: #000; }
+      .grid-bg { display: none; }
+      .carousel-slide { display: grid !important; margin-bottom: 32px; page-break-inside: avoid; }
+      .thumbs, .carousel-btn, .mode-tabs { display: none !important; }
+      .mode-content { display: block !important; }
+    }
+    body.paper .carousel-slide { display: grid !important; margin-bottom: 28px; }
+    body.paper .thumbs, body.paper .carousel-btn { display: none !important; }
+    body.paper .mode-content { display: block !important; }
+    body.paper .mode-tabs { display: none !important; }
   </style>
 </head>
+<body>
+  <div class="grid-bg"></div>
 
-<body class="font-outfit">
-  <div id="app-wrapper" class="w-full min-h-full grid-bg">
-    
-    <div class="no-print fixed top-6 right-6 z-50 flex gap-3">
-      <button onclick="togglePrintMode()" class="px-5 py-2 rounded-xl bg-purple-600 font-bold text-xs text-white shadow-lg hover:scale-105 active:scale-95 transition-all">MODO PAPEL / NEÓN</button>
-      <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-green-500 font-bold text-xs text-black shadow-lg hover:scale-105 active:scale-95 transition-all">IMPRIMIR PDF</button>
-    </div>
-
-    <div class="max-w-5xl mx-auto px-6 py-10">
-      
-      <header class="flex flex-col md:flex-row justify-between items-center mb-10 border-b border-white/10 pb-8 gap-6">
-        <div class="flex items-center gap-6">
-          <img src="robotica/assets/mascota.png" alt="Mascota" class="w-28 h-28 object-contain">
-          <div>
-            <h1 class="text-5xl font-black italic tracking-tighter">GUÍA DE PRÁCTICA</h1>
-            <p class="text-green-400 font-mono text-sm tracking-widest uppercase">Robótica · {{NIVEL}} · {{PILAR}}</p>
-          </div>
-        </div>
-        <img src="robotica/assets/innaat.png" alt="Inna'at" class="h-16 object-contain">
-      </header>
-
-      <section class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6 section-card mb-8">
-        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Estudiante</label><input type="text"></div>
-        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Grupo</label><input type="text"></div>
-        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Fecha</label><input type="text"></div>
-        <div class="flex flex-col"><label class="text-[10px] font-bold text-green-400 uppercase">Práctica</label><span class="text-2xl font-black">#{{PRACTICA_ID}}</span></div>
-      </section>
-
-      <div class="mb-8 p-6 section-card bg-green-500/5 border-l-4 border-l-green-500">
-        <h2 class="text-2xl md:text-3xl font-bold italic uppercase">{{TITULO_TEMA}}</h2>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <div class="lg:col-span-2 space-y-8">
-          
-          <section class="p-6 section-card">
-            <h3 class="text-blue-400 font-bold flex items-center gap-2 mb-3 uppercase tracking-wider"><i data-lucide="target"></i> Objetivo</h3>
-            <p class="text-sm leading-relaxed">{{INTRO_TEORIA}}</p>
-          </section>
-
-          <section class="p-6 section-card">
-            <h3 class="text-green-400 font-bold flex items-center gap-2 mb-4 uppercase tracking-wider"><i data-lucide="list-checks"></i> Instrucciones</h3>
-            <div class="space-y-3 text-sm">
-              {{PASOS_LISTA}} </div>
-          </section>
-
-          <section class="p-6 section-card">
-            <h3 class="text-teal-400 font-bold flex items-center gap-2 mb-4 uppercase tracking-wider"><i data-lucide="git-branch"></i> Esquema de Conexión</h3>
-            <pre class="bg-black/40 p-4 rounded-xl font-mono text-xs text-teal-300 overflow-x-auto border border-teal-500/20">{{DIAGRAMA_ASCII}}</pre>
-          </section>
-        </div>
-
-        <div class="space-y-8">
-          
-          <section class="p-6 section-card border-l-4 border-l-yellow-500">
-            <h3 class="text-yellow-400 font-bold flex items-center gap-2 mb-4 uppercase"><i data-lucide="cpu"></i> Componentes</h3>
-            <ul class="text-sm space-y-2 opacity-80">{{LISTA_COMPONENTES}}</ul>
-          </section>
-
-          <section class="p-6 section-card bg-white/[0.02]">
-            <h3 class="text-orange-400 font-bold mb-4 uppercase flex items-center gap-2"><i data-lucide="table"></i> Resultados</h3>
-            <div class="space-y-4">
-              <div class="flex flex-col gap-1"><span class="text-[10px] text-gray-500">MEDICIÓN / OBSERVACIÓN</span><input type="text" class="w-full"></div>
-              <div class="flex flex-col gap-1"><span class="text-[10px] text-gray-500">ESTADO FINAL</span><input type="text" class="w-full"></div>
-            </div>
-          </section>
-
-          <section class="p-6 section-card border-l-4 border-l-purple-500">
-            <h3 class="text-purple-400 font-bold mb-3 uppercase flex items-center gap-2"><i data-lucide="brain"></i> Conclusión</h3>
-            <textarea class="w-full h-24 text-sm bg-transparent border-none p-0" placeholder="¿Qué descubriste?"></textarea>
-          </section>
-
-          <div class="flex flex-col items-center gap-4 pt-4">
-            <img src="robotica/assets/rikishi.png" alt="Rikishi" class="w-40 drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]">
-            <p class="text-[10px] font-mono opacity-30 uppercase tracking-[0.3em]">Protocolo de Competencia</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
+  <!-- ── TOP BAR ── -->
+  <div class="no-print fixed top-5 right-5 z-50 flex gap-2">
+    <button onclick="togglePaper()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/5 hover:bg-white/10 transition-all backdrop-blur">
+      <i data-lucide="file-text" style="width:13px;height:13px;"></i> MODO PAPEL
+    </button>
+    <button onclick="window.print()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-green-500 text-black hover:bg-green-400 transition-all shadow-lg shadow-green-500/20">
+      <i data-lucide="printer" style="width:13px;height:13px;"></i> IMPRIMIR
+    </button>
   </div>
+
+  <main class="relative z-10 max-w-5xl mx-auto px-5 py-10 md:px-10 md:py-14">
+
+    <!-- ── HEADER ── -->
+    <header class="rev rev-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 pb-8 border-b border-white/10">
+      <div class="flex items-center gap-5">
+        <img src="robotica/assets/mascota.png" class="w-20 h-20 object-contain drop-shadow-xl" alt="Mascota RIKISHI" onerror="this.style.display='none'">
+        <div>
+          <div class="flex items-center gap-2 mb-1 flex-wrap">
+            <span class="badge bg-green-500/15 text-green-400 border border-green-500/30">P-01</span>
+            <span class="badge bg-blue-500/15 text-blue-400 border border-blue-500/30">Electrónica</span>
+            <span class="badge bg-yellow-500/15 text-yellow-400 border border-yellow-500/30">🟢 Básico</span>
+          </div>
+          <h1 class="text-3xl md:text-4xl font-black italic uppercase leading-none">⚡ El multímetro<br><span class="text-green-400">y la Ley de Ohm</span></h1>
+          <p class="text-xs font-mono mt-1 opacity-50 tracking-widest">INSTRUMENTACIÓN BÁSICA · TINKERCAD + FÍSICO</p>
+        </div>
+      </div>
+      <img src="robotica/assets/innaat.png" class="h-10 opacity-80" alt="Inna'at" onerror="this.style.display='none'">
+    </header>
+
+    <!-- ── PROBLEMA DETONADOR ── -->
+    <section class="rev rev-2 mb-8">
+      <div class="relative overflow-hidden rounded-3xl p-6 border-l-8 border-green-500"
+           style="background: linear-gradient(135deg, rgba(34,197,94,.1) 0%, rgba(34,197,94,.03) 100%);">
+        <div class="absolute top-3 right-5 text-[80px] font-black opacity-5 leading-none select-none font-mono">?</div>
+        <div class="sec-title text-green-400"><i data-lucide="zap" style="width:14px;height:14px;"></i> Problema Detonador</div>
+        <p class="text-xl md:text-2xl font-bold italic leading-snug">
+          "¿Cómo puede un robot controlar la energía eléctrica para evitar que sus componentes se dañen o funcionen incorrectamente?"
+        </p>
+      </div>
+    </section>
+
+    <!-- ── OBJETIVO + FÓRMULA ── -->
+    <div class="rev rev-2 grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+      <div class="card p-5">
+        <div class="sec-title text-blue-400"><i data-lucide="target" style="width:14px;height:14px;"></i> Objetivo</div>
+        <p class="text-sm leading-relaxed opacity-80">
+          Comprender el uso del multímetro para medir voltaje, corriente y resistencia,
+          y aplicar la <strong>Ley de Ohm</strong> para analizar y validar circuitos eléctricos básicos.
+        </p>
+      </div>
+      <div class="card p-5">
+        <div class="sec-title text-green-400"><i data-lucide="function-square" style="width:14px;height:14px;"></i> Fórmula Clave</div>
+        <div class="formula-box">
+          <div>
+            <div class="eq">V = I × R</div>
+            <div class="text-xs opacity-50 mt-1 font-mono">Voltaje = Corriente × Resistencia</div>
+          </div>
+          <div class="text-right text-xs opacity-40 font-mono leading-loose">
+            V → Volts (V)<br>I → Amperes (A)<br>R → Ohms (Ω)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MARCO TEÓRICO ── -->
+    <section class="rev rev-3 card p-6 mb-8">
+      <div class="sec-title text-green-400"><i data-lucide="book-open" style="width:14px;height:14px;"></i> Marco Teórico</div>
+      <p class="text-sm leading-relaxed opacity-80 mb-4">
+        La electricidad es el flujo de electrones a través de un material conductor.
+        En los robots, este flujo permite que LEDs, sensores y motores funcionen.
+        Tres conceptos fundamentales gobiernan este comportamiento:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="rounded-2xl p-4 border border-yellow-500/20 bg-yellow-500/5">
+          <div class="text-yellow-400 font-black text-lg mb-1">Voltaje <span class="font-mono text-sm">(V)</span></div>
+          <p class="text-xs opacity-70 leading-relaxed">La "fuerza" que empuja a los electrones. Sin voltaje, no hay flujo. Medido en Volts.</p>
+        </div>
+        <div class="rounded-2xl p-4 border border-blue-500/20 bg-blue-500/5">
+          <div class="text-blue-400 font-black text-lg mb-1">Corriente <span class="font-mono text-sm">(I)</span></div>
+          <p class="text-xs opacity-70 leading-relaxed">Cantidad de electrones que fluyen por segundo. Si el tubo es grande, pasa más agua. Medida en Amperes.</p>
+        </div>
+        <div class="rounded-2xl p-4 border border-red-500/20 bg-red-500/5">
+          <div class="text-red-400 font-black text-lg mb-1">Resistencia <span class="font-mono text-sm">(R)</span></div>
+          <p class="text-xs opacity-70 leading-relaxed">Oposición al flujo. Protege componentes como LEDs y sensores. Medida en Ohms (Ω).</p>
+        </div>
+      </div>
+      <div class="text-xs opacity-50 italic border-t border-white/5 pt-4">
+        El multímetro mide voltaje en <strong>paralelo</strong>, corriente en <strong>serie</strong> y resistencia <strong>sin energía</strong> en el circuito.
+      </div>
+    </section>
+
+    <!-- ── APLICACIÓN EN ROBÓTICA ── -->
+    <section class="rev rev-3 mb-8">
+      <div class="robot-app">
+        <div class="sec-title" style="color:#60a5fa;"><i data-lucide="bot" style="width:14px;height:14px;"></i> Aplicación en Robótica</div>
+        <p class="text-sm opacity-80 leading-relaxed">
+          Este conocimiento permite <strong>evitar dañar componentes</strong> como LEDs, sensores o el ESP32.
+          Un pin del ESP32 soporta máximo <span class="text-green-400 font-bold font-mono">40mA</span>.
+          Sin una resistencia calculada correctamente, el LED o el pin pueden quemarse permanentemente.
+          También es la base para diagnosticar fallas en el seguidor de línea cuando algo no funciona.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── COMPONENTES ── -->
+    <section class="rev rev-4 card p-6 mb-8">
+      <div class="sec-title text-yellow-400"><i data-lucide="cpu" style="width:14px;height:14px;"></i> Componentes Necesarios</div>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div class="flex items-center gap-2 text-sm opacity-75">
+          <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>Multímetro digital
+        </div>
+        <div class="flex items-center gap-2 text-sm opacity-75">
+          <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>Resistencias: 220Ω, 1kΩ, 10kΩ
+        </div>
+        <div class="flex items-center gap-2 text-sm opacity-75">
+          <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>Batería 9V con conector
+        </div>
+        <div class="flex items-center gap-2 text-sm opacity-75">
+          <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>Protoboard
+        </div>
+        <div class="flex items-center gap-2 text-sm opacity-75">
+          <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>LEDs (rojo, verde, amarillo)
+        </div>
+        <div class="flex items-center gap-2 text-sm opacity-75">
+          <span class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></span>Cables jumper M-M
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DIAGRAMA DE FLUJO ── -->
+    <section class="rev rev-4 card p-6 mb-8">
+      <div class="sec-title text-green-400"><i data-lucide="git-branch" style="width:14px;height:14px;"></i> Diagrama de Flujo</div>
+      <div class="flow gap-y-3">
+        <div class="flow-step">🟢 Inicio</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Armar circuito</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Medir voltaje</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Calcular I teórica</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Medir corriente</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Comparar valores</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Calcular %Error</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🏁 Conclusión</div>
+      </div>
+    </section>
+
+    <!-- ── INSTRUCCIONES CON CARRUSEL ── -->
+    <section class="rev rev-5 mb-8">
+      <div class="sec-title text-green-400 mb-4"><i data-lucide="list-ordered" style="width:14px;height:14px;"></i> Instrucciones de la Práctica</div>
+
+      <!-- Mode tabs -->
+      <div class="mode-tabs no-print">
+        <button class="mode-tab tk active" onclick="setMode('tk')">
+          <i data-lucide="monitor" style="width:11px;height:11px;display:inline;margin-right:5px;"></i>TinkerCAD
+        </button>
+        <button class="mode-tab fis" onclick="setMode('fis')">
+          <i data-lucide="wrench" style="width:11px;height:11px;display:inline;margin-right:5px;"></i>Físico
+        </button>
+      </div>
+
+      <!-- TinkerCAD mode -->
+      <div class="mode-content active" id="mode-tk">
+        <div class="card p-5 mb-4 border-l-4 border-blue-500">
+          <p class="text-xs font-mono text-blue-400 mb-2">SIMULACIÓN DIGITAL — TINKERCAD</p>
+          <p class="text-sm opacity-70">Abre TinkerCAD → Circuits → Nuevo Circuito. Construye los 3 circuitos de la práctica y mide con el multímetro virtual antes de pasar al físico.</p>
+        </div>
+      </div>
+
+      <!-- Físico mode -->
+      <div class="mode-content" id="mode-fis">
+        <div class="card p-5 mb-4 border-l-4 border-orange-500">
+          <p class="text-xs font-mono text-orange-400 mb-2">MONTAJE FÍSICO — PROTOBOARD</p>
+          <p class="text-sm opacity-70">Replica los circuitos de TinkerCAD en la protoboard usando componentes reales. Verifica con el multímetro físico y registra los valores en la tabla.</p>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill" style="width:20%"></div>
+      </div>
+
+      <!-- Nav row -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <button class="carousel-btn no-print" id="btn-prev" onclick="changeSlide(-1)" disabled>
+            <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
+          </button>
+          <button class="carousel-btn no-print" id="btn-next" onclick="changeSlide(1)">
+            <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+          </button>
+        </div>
+        <div class="font-mono text-xs font-bold px-4 py-1.5 rounded-full border border-green-500/30 bg-green-500/10 text-green-400" id="slide-indicator">
+          PARTE 1 / 5
+        </div>
+      </div>
+
+      <!-- SLIDES -->
+      <div class="carousel-wrap" id="carousel">
+
+        <!-- SLIDE 1 -->
+        <div class="carousel-slide active grid grid-cols-1 lg:grid-cols-5 gap-6 card p-6">
+          <div class="lg:col-span-3">
+            <img src="robotica/assets/P1.1.png" class="rounded-2xl w-full object-cover aspect-video bg-black/30" alt="Parte 1 - Voltaje" onerror="this.parentElement.innerHTML='<div class=\'rounded-2xl aspect-video bg-white/5 border border-white/10 flex items-center justify-center text-white/20 text-sm font-mono\'>P1.1.png</div>'">
+          </div>
+          <div class="lg:col-span-2 space-y-4">
+            <div>
+              <div class="text-green-400 font-black text-lg italic uppercase mb-1">Parte 1: Reconocimiento del Multímetro</div>
+              <p class="text-sm opacity-75 leading-relaxed">Identifica pantalla, perilla selectora y terminales COM, VΩmA y 10A. Configura en modo voltaje DC (V⎓).</p>
+            </div>
+            <div class="rounded-xl border border-green-500/20 bg-green-500/5 p-4">
+              <div class="text-xs font-mono text-green-400 mb-3 font-bold">PASOS</div>
+              <ol class="space-y-2 text-xs opacity-75 list-none">
+                <li class="flex gap-2"><span class="text-green-400 font-bold font-mono">01.</span> Observa el multímetro e identifica sus partes.</li>
+                <li class="flex gap-2"><span class="text-green-400 font-bold font-mono">02.</span> Ubica las entradas: COM (negro), VΩmA (rojo) y 10A.</li>
+                <li class="flex gap-2"><span class="text-green-400 font-bold font-mono">03.</span> Gira la perilla a V⎓ (voltaje corriente directa).</li>
+              </ol>
+            </div>
+            <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3">
+              <div class="text-xs font-mono text-yellow-400 mb-2">📐 Medición de Voltaje</div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">Batería nominal (V)</label>
+                  <input type="text" value="9.0" class="w-full text-sm font-mono">
+                </div>
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">Medido (V)</label>
+                  <input type="text" placeholder="0.0" class="w-full text-sm font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="carousel-slide grid grid-cols-1 lg:grid-cols-5 gap-6 card p-6">
+          <div class="lg:col-span-3">
+            <img src="robotica/assets/P1.2.png" class="rounded-2xl w-full object-cover aspect-video bg-black/30" alt="Parte 2 - Corriente" onerror="this.parentElement.innerHTML='<div class=\'rounded-2xl aspect-video bg-white/5 border border-white/10 flex items-center justify-center text-white/20 text-sm font-mono\'>P1.2.png</div>'">
+          </div>
+          <div class="lg:col-span-2 space-y-4">
+            <div>
+              <div class="text-blue-400 font-black text-lg italic uppercase mb-1">Parte 2: Medición de Voltaje</div>
+              <p class="text-sm opacity-75 leading-relaxed">Arma el circuito LED + resistencia en serie. Coloca el multímetro <strong>en paralelo</strong> con el LED.</p>
+            </div>
+            <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+              <div class="text-xs font-mono text-blue-400 mb-3 font-bold">PASOS</div>
+              <ol class="space-y-2 text-xs opacity-75 list-none">
+                <li class="flex gap-2"><span class="text-blue-400 font-bold font-mono">04.</span> Arma: batería → resistencia → LED en serie.</li>
+                <li class="flex gap-2"><span class="text-blue-400 font-bold font-mono">05.</span> Pon puntas del multímetro en paralelo con el LED.</li>
+                <li class="flex gap-2"><span class="text-blue-400 font-bold font-mono">06.</span> Registra el voltaje en el LED y en la resistencia.</li>
+              </ol>
+            </div>
+            <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3">
+              <div class="text-xs font-mono text-blue-400 mb-2">📐 Voltaje en componentes</div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">V en LED (V)</label>
+                  <input type="text" placeholder="~2.0" class="w-full text-sm font-mono">
+                </div>
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">V en resistencia (V)</label>
+                  <input type="text" placeholder="~7.0" class="w-full text-sm font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="carousel-slide grid grid-cols-1 lg:grid-cols-5 gap-6 card p-6">
+          <div class="lg:col-span-3">
+            <div class="rounded-2xl aspect-video bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-3 p-4">
+              <div class="font-mono text-2xl font-black text-green-400">V = I × R</div>
+              <div class="font-mono text-sm opacity-50">→ I = V ÷ R</div>
+              <div class="text-xs opacity-40 text-center">Calcula la corriente teórica<br>con los valores que mediste</div>
+            </div>
+          </div>
+          <div class="lg:col-span-2 space-y-4">
+            <div>
+              <div class="text-yellow-400 font-black text-lg italic uppercase mb-1">Parte 3: Cálculo Teórico</div>
+              <p class="text-sm opacity-75 leading-relaxed">Usa la Ley de Ohm para calcular la corriente esperada <strong>antes</strong> de medirla.</p>
+            </div>
+            <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
+              <div class="text-xs font-mono text-yellow-400 mb-3 font-bold">PASOS</div>
+              <ol class="space-y-2 text-xs opacity-75 list-none">
+                <li class="flex gap-2"><span class="text-yellow-400 font-bold font-mono">07.</span> Identifica el valor de la resistencia usada (código de colores).</li>
+                <li class="flex gap-2"><span class="text-yellow-400 font-bold font-mono">08.</span> Aplica I = V ÷ R con el voltaje medido.</li>
+                <li class="flex gap-2"><span class="text-yellow-400 font-bold font-mono">09.</span> Anota el resultado esperado en la tabla.</li>
+              </ol>
+            </div>
+            <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3">
+              <div class="text-xs font-mono text-yellow-400 mb-2">🧮 Cálculo</div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">Resistencia (Ω)</label>
+                  <input type="text" placeholder="220" class="w-full text-sm font-mono">
+                </div>
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">I calculada (mA)</label>
+                  <input type="text" placeholder="I=V/R" class="w-full text-sm font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 4 -->
+        <div class="carousel-slide grid grid-cols-1 lg:grid-cols-5 gap-6 card p-6">
+          <div class="lg:col-span-3">
+            <div class="rounded-2xl aspect-video bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-3 p-4 font-mono text-xs opacity-60">
+              <pre class="text-green-400 leading-relaxed text-center">CIRCUITO EN SERIE:
+ ┌──[R220Ω]──[LED]──┐
+ │                  │
+[9V]             [mA ←→]
+ └──────────────────┘
+  Multímetro EN SERIE</pre>
+            </div>
+          </div>
+          <div class="lg:col-span-2 space-y-4">
+            <div>
+              <div class="text-red-400 font-black text-lg italic uppercase mb-1">Parte 4: Medición de Corriente</div>
+              <p class="text-sm opacity-75 leading-relaxed">Conecta el multímetro <strong>en serie</strong> (abre el circuito e inserta el instrumento).</p>
+            </div>
+            <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+              <div class="text-xs font-mono text-red-400 mb-3 font-bold">PASOS</div>
+              <ol class="space-y-2 text-xs opacity-75 list-none">
+                <li class="flex gap-2"><span class="text-red-400 font-bold font-mono">10.</span> Abre el circuito desconectando un cable.</li>
+                <li class="flex gap-2"><span class="text-red-400 font-bold font-mono">11.</span> Configura en mA y conecta en serie.</li>
+                <li class="flex gap-2"><span class="text-red-400 font-bold font-mono">12.</span> Lee y registra la corriente real.</li>
+              </ol>
+            </div>
+            <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-3">
+              <div class="text-xs font-mono text-red-400 mb-2">📐 Corriente medida</div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">I calculada (mA)</label>
+                  <input type="text" placeholder="—" class="w-full text-sm font-mono">
+                </div>
+                <div>
+                  <label class="text-[10px] opacity-50 block mb-1">I medida (mA)</label>
+                  <input type="text" placeholder="0.0" class="w-full text-sm font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 5 -->
+        <div class="carousel-slide grid grid-cols-1 lg:grid-cols-5 gap-6 card p-6">
+          <div class="lg:col-span-3">
+            <div class="rounded-2xl aspect-video bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-2 p-4 font-mono text-xs opacity-60">
+              <pre class="text-green-400 leading-relaxed">SERIE:        PARALELO:
+┌─[R1]─[R2]─┐  ┌─[R1]─┐
+│            │  │  ─── │
+[V]          │  [V] [R2]│
+│            │  │  ─── │
+└────────────┘  └──────┘
+R_total=R1+R2  1/R=1/R1+1/R2</pre>
+            </div>
+          </div>
+          <div class="lg:col-span-2 space-y-4">
+            <div>
+              <div class="text-purple-400 font-black text-lg italic uppercase mb-1">Parte 5 y 6: Circuitos y Análisis</div>
+              <p class="text-sm opacity-75 leading-relaxed">Construye circuitos en serie y paralelo. Compara teórico vs medido y calcula el % de error.</p>
+            </div>
+            <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+              <div class="text-xs font-mono text-purple-400 mb-3 font-bold">PASOS</div>
+              <ol class="space-y-2 text-xs opacity-75 list-none">
+                <li class="flex gap-2"><span class="text-purple-400 font-bold font-mono">14.</span> Construye circuito con resistencias en serie.</li>
+                <li class="flex gap-2"><span class="text-purple-400 font-bold font-mono">15.</span> Construye circuito con resistencias en paralelo.</li>
+                <li class="flex gap-2"><span class="text-purple-400 font-bold font-mono">16.</span> Mide y registra. Calcula %Error = |(T−R)/T|×100.</li>
+              </ol>
+            </div>
+            <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3 font-mono text-xs text-purple-300 text-center">
+              %Error = |( Teórico − Real )| ÷ Teórico × 100
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end carousel -->
+
+      <!-- THUMBNAILS -->
+      <div class="thumbs no-print mt-4" id="thumbnails">
+        <div class="thumb active" onclick="goToSlide(0)">P1</div>
+        <div class="thumb" onclick="goToSlide(1)">P2</div>
+        <div class="thumb" onclick="goToSlide(2)">P3</div>
+        <div class="thumb" onclick="goToSlide(3)">P4</div>
+        <div class="thumb" onclick="goToSlide(4)">P5</div>
+      </div>
+    </section>
+
+    <!-- ── TABLA DE RESULTADOS ── -->
+    <section class="rev rev-6 card p-6 mb-8">
+      <div class="sec-title opacity-70"><i data-lucide="table" style="width:14px;height:14px;"></i> Tabla de Resultados</div>
+      <div class="overflow-x-auto">
+        <table class="rtable">
+          <thead>
+            <tr>
+              <th>Circuito</th>
+              <th>V teórico</th>
+              <th>I calculada</th>
+              <th>V medido</th>
+              <th>I medida</th>
+              <th>% Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-semibold opacity-90">LED + R 220Ω</td>
+              <td><input type="text" placeholder="9 V"></td>
+              <td><input type="text" placeholder="mA"></td>
+              <td><input type="text" placeholder="V"></td>
+              <td><input type="text" placeholder="mA"></td>
+              <td><input type="text" placeholder="%"></td>
+            </tr>
+            <tr>
+              <td class="font-semibold opacity-90">Serie R1+R2</td>
+              <td><input type="text" placeholder="V"></td>
+              <td><input type="text" placeholder="mA"></td>
+              <td><input type="text" placeholder="V"></td>
+              <td><input type="text" placeholder="mA"></td>
+              <td><input type="text" placeholder="%"></td>
+            </tr>
+            <tr>
+              <td class="font-semibold opacity-90">Paralelo R1||R2</td>
+              <td><input type="text" placeholder="V"></td>
+              <td><input type="text" placeholder="mA"></td>
+              <td><input type="text" placeholder="V"></td>
+              <td><input type="text" placeholder="mA"></td>
+              <td><input type="text" placeholder="%"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── ERRORES COMUNES ── -->
+    <section class="rev rev-6 mb-8">
+      <div class="sec-title text-red-400 mb-4"><i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> Errores Comunes — Évítalos</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="err-card">
+          <div class="err-icon"><i data-lucide="x-circle" style="width:16px;height:16px;color:#ef4444;"></i></div>
+          <div>
+            <div class="text-sm font-bold text-red-400 mb-1">Medir corriente en paralelo</div>
+            <p class="text-xs opacity-70">Quema el fusible del multímetro. La corriente siempre va en <strong>serie</strong>.</p>
+          </div>
+        </div>
+        <div class="err-card">
+          <div class="err-icon"><i data-lucide="x-circle" style="width:16px;height:16px;color:#ef4444;"></i></div>
+          <div>
+            <div class="text-sm font-bold text-red-400 mb-1">LED sin resistencia protectora</div>
+            <p class="text-xs opacity-70">Sin resistencia, la corriente es ilimitada y el LED se quema en segundos.</p>
+          </div>
+        </div>
+        <div class="err-card">
+          <div class="err-icon"><i data-lucide="x-circle" style="width:16px;height:16px;color:#ef4444;"></i></div>
+          <div>
+            <div class="text-sm font-bold text-red-400 mb-1">Perilla en posición incorrecta</div>
+            <p class="text-xs opacity-70">Medir voltaje con la perilla en corriente puede dañar el multímetro.</p>
+          </div>
+        </div>
+        <div class="err-card">
+          <div class="err-icon"><i data-lucide="x-circle" style="width:16px;height:16px;color:#ef4444;"></i></div>
+          <div>
+            <div class="text-sm font-bold text-red-400 mb-1">Polaridad invertida del LED</div>
+            <p class="text-xs opacity-70">El ánodo (+) es la patita larga. Invertirlo evita que el LED encienda.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── RETOS ── -->
+    <section class="rev rev-7 mb-8">
+      <div class="sec-title mb-4 opacity-60"><i data-lucide="trophy" style="width:14px;height:14px;"></i> Retos</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="reto-int">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge bg-purple-500/20 text-purple-300 border border-purple-500/30">⭐ Intermedio</span>
+          </div>
+          <p class="text-sm font-semibold mb-2">Diseña un circuito donde el LED no se queme y tenga el brillo adecuado.</p>
+          <p class="text-xs opacity-60 leading-relaxed">Calcula tú mismo el valor de la resistencia necesaria para que circule exactamente 20mA por el LED. Usa la Ley de Ohm: R = (V_bat − V_LED) ÷ I_LED.</p>
+        </div>
+        <div class="reto-adv">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">⭐⭐ Avanzado</span>
+          </div>
+          <p class="text-sm font-semibold mb-2">Calcula el error entre teórico y medido y explica por qué existe.</p>
+          <p class="text-xs opacity-60 leading-relaxed">%Error = |(Teórico − Real)| ÷ Teórico × 100. ¿Qué factores generan esa diferencia? Menciona mínimo 3 causas (tolerancia de componentes, resistencia interna, calibración del instrumento).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONCLUSIÓN ── -->
+    <section class="rev rev-8 mb-10">
+      <div class="sec-title text-green-400 mb-3"><i data-lucide="pen-line" style="width:14px;height:14px;"></i> Conclusión de la Misión</div>
+      <div class="card p-5">
+        <p class="text-xs opacity-40 mb-3 font-mono">Reflexiona: ¿Qué aprendiste? ¿Cómo se relaciona con el seguidor de línea?</p>
+        <textarea rows="5" placeholder="Los cálculos teóricos no siempre coinciden exactamente con la realidad, pero permiten predecir el comportamiento del circuito. En el seguidor de línea esto es importante porque..."></textarea>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer class="flex items-center justify-between opacity-30 hover:opacity-70 transition-opacity pt-6 border-t border-white/10">
+      <span class="font-mono text-[10px] tracking-[.4em] uppercase">System Protocol · Inna'at · RIKISHI</span>
+      <img src="robotica/assets/rikishi.png" class="h-8 grayscale" alt="RIKISHI" onerror="this.style.display='none'">
+    </footer>
+
+  </main>
 
   <script>
     lucide.createIcons();
-    function togglePrintMode() {
-      document.body.classList.toggle('print-mode');
-      // Re-crear iconos para asegurar visibilidad en cambio de tema
+
+    /* ── CARRUSEL ── */
+    const slides    = document.querySelectorAll('.carousel-slide');
+    const thumbs    = document.querySelectorAll('.thumb');
+    const indicator = document.getElementById('slide-indicator');
+    const fill      = document.getElementById('progress-fill');
+    const btnPrev   = document.getElementById('btn-prev');
+    const btnNext   = document.getElementById('btn-next');
+    const partNames = ['PARTE 1 / 5','PARTE 2 / 5','PARTE 3 / 5','PARTE 4 / 5','PARTE 5 / 5'];
+    let current = 0;
+
+    function goToSlide(n) {
+      slides[current].classList.remove('active');
+      thumbs[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      thumbs[current].classList.add('active');
+      indicator.textContent = partNames[current];
+      fill.style.width = `${((current + 1) / slides.length) * 100}%`;
+      btnPrev.disabled = current === 0;
+      btnNext.disabled = current === slides.length - 1;
       lucide.createIcons();
     }
+
+    function changeSlide(dir) { goToSlide(current + dir); }
+
+    /* ── MODE TABS ── */
+    function setMode(m) {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mode-content').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.mode-tab.${m}`).classList.add('active');
+      document.getElementById(`mode-${m}`).classList.add('active');
+    }
+
+    /* ── PAPER TOGGLE ── */
+    function togglePaper() {
+      document.body.classList.toggle('paper');
+      lucide.createIcons();
+    }
+
+    /* ── KEYBOARD NAV ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') changeSlide(1);
+      if (e.key === 'ArrowLeft')  changeSlide(-1);
+    });
   </script>
 </body>
 </html>
