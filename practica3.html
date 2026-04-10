@@ -3,142 +3,158 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inna'at - Mission Control</title>
+  <title>Inna'at - Misión P-01</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
   
   <style>
-    :root { --accent: #22c55e; --bg: #0a0f1a; --text: #ffffff; --card: rgba(255,255,255,0.03); --aura: rgba(34,197,94,0.4); }
-    body.print-mode { --bg: #ffffff; --text: #000000; --accent: #16a34a; --card: #f9fafb; --aura: transparent; }
+    :root { --accent: #22c55e; --bg: #0a0f1a; --text: #ffffff; --card: rgba(255,255,255,0.03); }
+    body.print-mode { --bg: #ffffff; --text: #000000; --accent: #16a34a; --card: #f9fafb; }
+    body { background-color: var(--bg); color: var(--text); transition: all 0.4s ease; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
     
-    body { background-color: var(--bg); color: var(--text); transition: all 0.4s ease; font-family: 'Outfit', sans-serif; }
-    .grid-bg { background-image: radial-gradient(var(--accent) 0.5px, transparent 0.5px); background-size: 25px 25px; opacity: 0.1; position: fixed; inset: 0; z-index: -1; }
-    
-    /* Logos y Auras Adaptativas */
-    .logo-aura { filter: drop-shadow(0 0 8px var(--aura)); border: 1px solid var(--aura); border-radius: 1rem; transition: all 0.4s; }
-    body.print-mode .logo-aura { border: 1px solid #ddd; filter: none; }
+    /* FIX CARRUSEL: Asegura que solo se vea la activa */
+    .mission-slide { display: none !important; width: 100%; }
+    .mission-slide.active { display: flex !important; animation: slideIn 0.4s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 
-    /* Lógica del Carrusel */
-    .mission-slide { display: none; }
-    .mission-slide.active { display: flex; animation: slideIn 0.5s ease-out; }
-    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-    /* Desarmado para Impresión */
+    /* MODO PAPEL: Desarma el carrusel para impresión vertical */
     @media print {
       .no-print { display: none !important; }
-      .mission-slide { display: flex !important; flex-direction: column !important; page-break-inside: avoid; margin-bottom: 4rem; border-bottom: 2px solid #eee; padding-bottom: 2rem; }
-      body { background: white !important; color: black !important; }
+      .mission-slide { display: flex !important; flex-direction: column !important; margin-bottom: 50px; page-break-inside: avoid; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+      .grid-bg { display: none; }
     }
-    body.print-mode .mission-slide { display: flex !important; flex-direction: column !important; margin-bottom: 3rem; }
+    body.print-mode .mission-slide { display: flex !important; flex-direction: column !important; margin-bottom: 40px; }
     body.print-mode .carousel-nav { display: none !important; }
 
-    input.error-val { border: 2px solid #ef4444 !important; background: rgba(239, 68, 68, 0.1); }
-    input.success-val { border: 2px solid #22c55e !important; }
+    .grid-bg { background-image: radial-gradient(var(--accent) 0.5px, transparent 0.5px); background-size: 25px 25px; opacity: 0.1; position: fixed; inset: 0; z-index: -1; }
+    input, textarea { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; color: var(--text); outline: none; }
+    body.print-mode input, body.print-mode textarea { border: 1px solid #ccc; background: #fff; }
   </style>
 </head>
 <body>
   <div class="grid-bg"></div>
   
   <div class="no-print fixed top-6 right-6 z-50 flex gap-3">
-    <button onclick="togglePrintMode()" class="px-4 py-2 bg-purple-600 text-white rounded-xl font-bold text-xs shadow-xl hover:scale-105">MODO PAPEL</button>
-    <button onclick="window.print()" class="px-4 py-2 bg-green-500 text-black rounded-xl font-bold text-xs shadow-xl hover:scale-105">IMPRIMIR PDF</button>
+    <button onclick="togglePrintMode()" class="px-4 py-2 bg-purple-600 text-white rounded-xl font-bold text-xs shadow-xl">MODO PAPEL</button>
+    <button onclick="window.print()" class="px-4 py-2 bg-green-500 text-black rounded-xl font-bold text-xs shadow-xl">IMPRIMIR PDF</button>
   </div>
 
   <main class="max-w-6xl mx-auto px-6 py-10">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-8">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 border-b border-white/10 pb-8">
       <div class="flex items-center gap-6">
-        <img src="robotica/assets/mascota.png" class="w-32 h-32 object-contain logo-aura p-2">
+        <img src="robotica/assets/guerrero.png" class="w-24 h-24 object-contain" alt="Guerrero Mech">
         <div>
-          <h1 class="text-5xl font-black italic tracking-tighter uppercase leading-none">P-01: LEY DE OHM</h1>
-          <p class="text-green-400 font-mono text-sm tracking-[0.3em] mt-2">ROBÓTICA DE COMPETENCIA</p>
+          <h1 class="text-4xl font-black italic uppercase">P-01: El multímetro y la Ley de Ohm</h1>
+          <p class="text-green-400 font-mono text-xs tracking-widest">INSTRUMENTACIÓN BÁSICA | TINKERCAD + FÍSICO</p>
         </div>
       </div>
-      <img src="robotica/assets/innaat.png" class="h-16 object-contain logo-aura p-3 bg-white/5">
+      <img src="robotica/assets/innaat.png" class="h-12" alt="Inna'at Logo">
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
-      <section class="lg:col-span-3 p-8 rounded-3xl bg-blue-600/10 border-l-8 border-blue-500 relative overflow-hidden">
-        <div class="relative z-10">
-          <h3 class="text-xs font-black text-blue-400 mb-2 tracking-[0.2em] uppercase">Problema Detonador</h3>
-          <p class="text-2xl font-bold italic text-blue-50">"¿Cómo puede un robot controlar la energía eléctrica para evitar que sus componentes se dañen?"</p>
-        </div>
-        <i data-lucide="zap" class="absolute -right-4 -bottom-4 w-32 h-32 text-blue-500/10 rotate-12"></i>
-      </section>
-      
-      <div class="p-6 rounded-3xl bg-white/[0.03] border border-white/10 flex flex-col justify-center items-center text-center">
-        <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Modalidad</span>
-        <div class="text-xl font-black text-yellow-500">TINKERCAD + FÍSICO</div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+      <div class="lg:col-span-2 space-y-6">
+        <section class="p-6 rounded-3xl bg-blue-600/10 border-l-8 border-blue-500">
+          <h3 class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Problema Detonador</h3>
+          <p class="text-xl italic font-bold">"¿Cómo puede un robot controlar la energía eléctrica para evitar que sus componentes se dañen?"</p>
+        </section>
+
+        <section class="p-6 rounded-3xl bg-white/[0.02] border border-white/10">
+          <h3 class="text-green-400 font-bold mb-4 uppercase flex items-center gap-2"><i data-lucide="book-open"></i> Marco Teórico</h3>
+          <p class="text-sm leading-relaxed opacity-80">
+            La electricidad es el flujo de electrones. En robótica usamos el <b>Voltaje (fuerza)</b>, <b>Corriente (flujo)</b> y <b>Resistencia (oposición)</b>. 
+            La relación se define por la <b>Ley de Ohm: V = I × R</b>.
+          </p>
+        </section>
       </div>
+
+      <aside class="p-6 rounded-3xl bg-white/[0.02] border border-white/10">
+        <h3 class="text-yellow-500 font-bold mb-4 uppercase text-xs italic">Componentes Necesarios</h3>
+        <ul class="text-[11px] space-y-2 opacity-70">
+          <li>• Multímetro Digital</li>
+          <li>• Resistencias (220Ω, 1kΩ, 10kΩ)</li>
+          <li>• Batería 9V y Protoboard</li>
+          <li>• LEDs y Cables Jumper</li>
+        </ul>
+      </aside>
     </div>
 
     <div class="carousel-nav flex justify-between items-center mb-6 no-print bg-white/5 p-4 rounded-2xl border border-white/10">
-      <div class="flex items-center gap-3">
-        <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-        <h2 class="font-black italic text-sm tracking-wider">REGISTRO DE MISIONES ACTIVAS</h2>
-      </div>
+      <h2 class="font-black italic text-sm tracking-wider text-green-400">PASOS DE LA MISIÓN</h2>
       <div class="flex items-center gap-4">
-        <button onclick="changeSlide(-1)" class="p-2 hover:text-green-400 transition-colors"><i data-lucide="arrow-left-circle"></i></button>
-        <span id="slide-indicator" class="font-mono text-sm font-bold bg-green-500 text-black px-3 py-1 rounded-md">MISIÓN 1 / 5</span>
-        <button onclick="changeSlide(1)" class="p-2 hover:text-green-400 transition-colors"><i data-lucide="arrow-right-circle"></i></button>
+        <button onclick="changeSlide(-1)" class="hover:scale-110 transition-transform"><i data-lucide="chevron-left-circle"></i></button>
+        <span id="slide-indicator" class="font-mono text-xs font-bold bg-green-500 text-black px-4 py-1 rounded-full">1 / 5</span>
+        <button onclick="changeSlide(1)" class="hover:scale-110 transition-transform"><i data-lucide="chevron-right-circle"></i></button>
       </div>
     </div>
 
     <div id="mission-container">
+      
       <div class="mission-slide active flex flex-col lg:flex-row gap-10 items-start">
-        <div class="w-full lg:w-3/5 relative">
-          <img src="robotica/assets/P1.1.png" class="rounded-3xl border border-white/10 shadow-2xl w-full">
-          <div class="absolute top-4 left-4 px-3 py-1 bg-black/60 backdrop-blur-md rounded-lg text-[10px] font-mono border border-white/20 uppercase">Vista: Medición de Fuente</div>
+        <div class="w-full lg:w-3/5">
+          <img src="robotica/assets/mision1.jpg" class="rounded-3xl border border-white/10 shadow-2xl w-full aspect-video object-cover bg-black/40">
         </div>
         <div class="w-full lg:w-2/5 space-y-6">
           <div class="p-6 rounded-3xl bg-white/[0.03] border border-white/10">
-            <h3 class="text-green-400 font-black text-xl italic uppercase mb-2">Misión 1: Diagnóstico</h3>
-            <p class="text-sm opacity-80 leading-relaxed">Usa el multímetro para verificar el estado de tu batería. Un robot sin energía estable es un robot que fallará en la arena.</p>
+            <h3 class="text-green-400 font-black text-xl italic uppercase mb-2">Parte 1: Voltaje</h3>
+            <p class="text-sm opacity-80">Identifica las terminales COM y VΩmA. Configura en V⎓ y mide la batería en paralelo.</p>
           </div>
-          <div class="p-6 rounded-3xl bg-green-500/5 border border-green-500/20">
-            <h4 class="text-xs font-bold text-green-400 mb-4 uppercase">Bitácora de Datos</h4>
-            <div class="space-y-4">
-              <div class="flex justify-between border-b border-white/5 pb-2">
-                <span class="text-xs">Voltaje Teórico</span>
-                <span id="t1" class="text-xs font-mono">9.0 V</span>
-              </div>
-              <div class="flex flex-col gap-2">
-                <label class="text-[10px] text-gray-500 uppercase">Voltaje Medido (V)</label>
-                <input type="number" step="0.1" onchange="validate(this, 9.0)" class="w-full text-lg font-black p-2 rounded-lg">
-              </div>
+          <div class="p-6 rounded-3xl border border-green-500/20 bg-green-500/5">
+            <h4 class="text-xs font-bold mb-3 uppercase">Resultados V</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="text-[10px] opacity-50">Teórico (V)</label><input type="text" value="9.0" class="w-full"></div>
+              <div><label class="text-[10px] opacity-50">Medido (V)</label><input type="text" placeholder="0.0" class="w-full"></div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="mission-slide flex flex-col lg:flex-row gap-10 items-start">
-        <div class="w-full lg:w-3/5"><img src="robotica/assets/P1.2.png" class="rounded-3xl border border-white/10 shadow-2xl w-full"></div>
+        <div class="w-full lg:w-3/5">
+          <img src="robotica/assets/mision2.jpg" class="rounded-3xl border border-white/10 shadow-2xl w-full aspect-video object-cover bg-black/40">
+        </div>
         <div class="w-full lg:w-2/5 space-y-6">
           <div class="p-6 rounded-3xl bg-white/[0.03] border border-white/10">
-            <h3 class="text-green-400 font-black text-xl italic uppercase mb-2">Misión 2: El Protector</h3>
-            <p class="text-sm opacity-80 leading-relaxed">Integra una resistencia para proteger al LED. Calcula su valor teórico antes de medir.</p>
+            <h3 class="text-green-400 font-black text-xl italic uppercase mb-2">Parte 2: Corriente</h3>
+            <p class="text-sm opacity-80">Abre el circuito y conecta el multímetro en serie (modo mA). Calcula I = V/R antes de medir.</p>
           </div>
-          <div class="p-6 rounded-3xl bg-yellow-500/5 border border-yellow-500/20">
-            <h4 class="text-xs font-bold text-yellow-400 mb-4 uppercase">Cálculos Ohmicos</h4>
-            <div class="flex flex-col gap-2">
-              <label class="text-[10px] text-gray-500 uppercase">Resistencia Calculada (Ω)</label>
-              <input type="number" onchange="validate(this, 220)" class="w-full text-lg font-black p-2 rounded-lg">
+          <div class="p-6 rounded-3xl border border-yellow-500/20 bg-yellow-500/5">
+            <h4 class="text-xs font-bold mb-3 uppercase">Cálculo de Amperaje</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="text-[10px] opacity-50">Calculado (mA)</label><input type="text" class="w-full"></div>
+              <div><label class="text-[10px] opacity-50">Medido (mA)</label><input type="text" class="w-full"></div>
             </div>
           </div>
         </div>
       </div>
-      
+
       </div>
 
-    <footer class="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="text-center md:text-left">
-        <h4 class="text-purple-400 font-bold uppercase text-xs mb-2 italic">Protocolo de Competencia</h4>
-        <textarea class="w-full md:w-96 h-24 bg-transparent border border-white/10 rounded-xl p-3 text-xs" placeholder="Escribe aquí tu conclusión final de la misión..."></textarea>
+    <section class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/10 pt-10">
+      <div class="space-y-6">
+        <div class="p-6 rounded-3xl bg-red-500/5 border border-red-500/20">
+          <h4 class="text-red-400 font-bold uppercase text-xs mb-3 flex items-center gap-2"><i data-lucide="alert-triangle"></i> Errores Comunes</h4>
+          <ul class="text-[11px] opacity-70 space-y-1 italic">
+            <li>• Medir corriente en paralelo (quema el fusible).</li>
+            <li>• Conectar el LED sin resistencia protectora.</li>
+            <li>• Invertir la polaridad de la batería.</li>
+          </ul>
+        </div>
+        <div class="p-6 rounded-3xl bg-purple-500/5 border border-purple-500/20">
+          <h4 class="text-purple-400 font-bold uppercase text-xs mb-2">Reto Avanzado</h4>
+          <p class="text-[11px] opacity-70 italic">Calcula el % de error entre tu medición y el cálculo teórico: %Error = |(T-R)/T| x 100.</p>
+        </div>
       </div>
-      <div class="flex flex-col items-center">
-        <img src="robotica/assets/rikishi.png" class="w-40 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
-        <span class="text-[8px] font-mono mt-2 opacity-20 tracking-[0.5em]">SECURE SYSTEM INNA'AT</span>
+
+      <div class="flex flex-col">
+        <h3 class="text-green-400 font-bold uppercase text-xs mb-4">Conclusión de Misión</h3>
+        <textarea class="flex-grow rounded-2xl p-4 text-sm" placeholder="Escribe tu análisis final aquí..."></textarea>
       </div>
+    </section>
+
+    <footer class="mt-16 flex justify-between items-end opacity-40 hover:opacity-100 transition-opacity">
+      <div class="text-[10px] font-mono uppercase tracking-[0.5em]">System Protocol: Inna'at-Rikish</div>
+      <img src="robotica/assets/rikishi.png" class="h-12 grayscale" alt="Rikish Logo">
     </footer>
   </main>
 
@@ -149,28 +165,19 @@
     const indicator = document.getElementById('slide-indicator');
 
     function changeSlide(direction) {
-      slides[currentSlide].classList.remove('active');
+      // Ocultar todas primero
+      slides.forEach(s => s.classList.remove('active'));
+      // Calcular siguiente
       currentSlide = (currentSlide + direction + slides.length) % slides.length;
+      // Mostrar solo la que toca
       slides[currentSlide].classList.add('active');
-      indicator.innerText = `MISIÓN ${currentSlide + 1} / ${slides.length}`;
+      indicator.innerText = `${currentSlide + 1} / ${slides.length}`;
       lucide.createIcons();
     }
 
     function togglePrintMode() {
       document.body.classList.toggle('print-mode');
       lucide.createIcons();
-    }
-
-    function validate(el, target) {
-      const val = parseFloat(el.value);
-      const diff = Math.abs(val - target) / target;
-      if(diff > 0.2) {
-        el.classList.add('error-val');
-        el.classList.remove('success-val');
-      } else {
-        el.classList.add('success-val');
-        el.classList.remove('error-val');
-      }
     }
   </script>
 </body>
