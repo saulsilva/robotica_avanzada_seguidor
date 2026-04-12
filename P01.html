@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inna'at · P01 ⚡ El multímetro y la Ley de Ohm</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent:#22c55e; --bg:#0a0f1a; --card:rgba(255,255,255,.03); --border:rgba(255,255,255,.08); --text:#fff; --muted:rgba(255,255,255,.55); }
+    body.paper { --bg:#f8fafc; --card:#fff; --border:#e2e8f0; --text:#0f172a; --muted:#64748b; }
+    *{box-sizing:border-box;} body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;transition:background .3s,color .3s;}
+    .grid-bg{background-image:radial-gradient(var(--accent) 0.5px,transparent 0.5px);background-size:26px 26px;opacity:.07;position:fixed;inset:0;z-index:0;pointer-events:none;}
+    body.paper .grid-bg{opacity:.03;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;transition:background .3s,border .3s;}
+    body.paper .card{background:#fff;border-color:#e2e8f0;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-family:'Space Mono',monospace;}
+    .sec-title{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-family:'Space Mono',monospace;display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+    /* formula */ .formula-box{background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04));border:1.5px solid rgba(34,197,94,.3);border-radius:16px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    body.paper .formula-box{background:#f0fdf4;border-color:#86efac;}
+    .formula-box .eq{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--accent);}
+    /* flow */ .flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+    .flow-step{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:9px;padding:6px 12px;font-size:11px;font-weight:600;flex-shrink:0;}
+    body.paper .flow-step{background:#f0fdf4;border-color:#86efac;}
+    .flow-arrow{color:var(--accent);font-size:16px;padding:0 2px;flex-shrink:0;}
+    /* mode tabs */ .mode-tabs{display:flex;gap:8px;margin-bottom:14px;}
+    .mode-tab{padding:6px 16px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:all .2s;font-family:'Space Mono',monospace;}
+    .mode-tab.tk{border-color:rgba(59,130,246,.4);color:#60a5fa;background:rgba(59,130,246,.08);}
+    .mode-tab.fis{border-color:rgba(251,146,60,.4);color:#fb923c;background:rgba(251,146,60,.08);}
+    .mode-tab.active.tk{background:rgba(59,130,246,.2);border-color:#60a5fa;}
+    .mode-tab.active.fis{background:rgba(251,146,60,.2);border-color:#fb923c;}
+    .mode-content{display:none;} .mode-content.active{display:block;animation:fadeIn .3s ease;}
+    /* carousel */ .carousel-slide{display:none;grid-template-columns:3fr 2fr;gap:20px;animation:slideIn .4s ease-out;}
+    .carousel-slide.active{display:grid;}
+    .slide-img-col img{width:100%;border-radius:16px;aspect-ratio:16/9;object-fit:cover;background:rgba(255,255,255,.05);}
+    .img-placeholder{width:100%;aspect-ratio:16/9;border-radius:16px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;font-family:'Space Mono',monospace;background:rgba(255,255,255,.02);}
+    .slide-content-col{display:flex;flex-direction:column;gap:12px;}
+    .slide-header{font-size:16px;font-weight:800;font-style:italic;text-transform:uppercase;line-height:1.2;}
+    .steps{display:flex;flex-direction:column;gap:8px;}
+    .step{display:flex;gap:10px;align-items:flex-start;}
+    .step-num{width:28px;height:28px;border-radius:8px;font-weight:700;font-size:11px;font-family:'Space Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step p{color:var(--muted);font-size:13px;padding-top:4px;margin:0;line-height:1.5;}
+    body.paper .step p{color:#475569;}
+    .slide-fields{border-radius:12px;padding:14px;}
+    .fields-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+    .fields-grid input{background:transparent;border:none;border-bottom:1px dashed var(--border);width:100%;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;padding:3px 0;}
+    .fields-grid label{font-size:9px;opacity:.5;display:block;margin-bottom:3px;}
+    /* progress */ .progress-track{height:3px;background:var(--border);border-radius:999px;margin-bottom:14px;}
+    .progress-fill{height:3px;background:var(--accent);border-radius:999px;transition:width .4s ease;}
+    /* thumbs */ .thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;}
+    .thumb{width:44px;height:32px;border-radius:7px;cursor:pointer;border:2px solid transparent;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);transition:border-color .2s,transform .2s;}
+    .thumb:hover{transform:scale(1.05);} .thumb.active{border-color:var(--accent);color:var(--accent);}
+    body.paper .thumb{background:#f1f5f9;border-color:#e2e8f0;} body.paper .thumb.active{border-color:var(--accent);}
+    /* carousel btns */ .carousel-btn{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+    .carousel-btn:hover{border-color:var(--accent);color:var(--accent);} .carousel-btn:disabled{opacity:.3;cursor:default;}
+    /* results table */ .rtable{width:100%;border-collapse:collapse;font-size:12px;}
+    .rtable th{padding:8px 12px;background:rgba(34,197,94,.1);color:var(--accent);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:left;border-bottom:1px solid rgba(34,197,94,.2);}
+    .rtable td{padding:7px 12px;border-bottom:1px solid var(--border);color:var(--muted);}
+    .rtable tr:last-child td{border-bottom:none;}
+    .rtable input{background:transparent;border:none;border-bottom:1px dashed var(--border);width:100%;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;outline:none;padding:2px 0;}
+    .rtable input:focus{border-bottom-color:var(--accent);}
+    body.paper .rtable th{background:#f0fdf4;border-color:#86efac;color:#16a34a;}
+    body.paper .rtable td{border-color:#e2e8f0;color:#475569;}
+    body.paper .rtable input{color:#0f172a;border-color:#cbd5e1;}
+    /* errors */ .err-card{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:13px;padding:14px;display:flex;gap:12px;align-items:flex-start;}
+    body.paper .err-card{background:#fef2f2;border-color:#fecaca;}
+    .err-icon{width:28px;height:28px;border-radius:7px;background:rgba(239,68,68,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#f87171;font-weight:700;}
+    .err-title{font-size:13px;font-weight:700;color:#f87171;margin-bottom:3px;}
+    .err-card p{font-size:11px;opacity:.7;margin:0;line-height:1.5;}
+    body.paper .err-title{color:#dc2626;} body.paper .err-card p{color:#64748b;}
+    /* retos */ .reto-int{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:15px;padding:18px;}
+    .reto-adv{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:15px;padding:18px;}
+    body.paper .reto-int{background:#faf5ff;border-color:#d8b4fe;} body.paper .reto-adv{background:#fffbeb;border-color:#fcd34d;}
+    /* robot app */ .robot-app{background:linear-gradient(135deg,rgba(31,56,100,.5),rgba(31,56,100,.2));border:1px solid rgba(31,56,100,.6);border-radius:15px;padding:18px;}
+    body.paper .robot-app{background:#eff6ff;border-color:#bfdbfe;}
+    /* theory chips */ .theory-grid{display:flex;flex-wrap:wrap;gap:7px;}
+    .theory-chip{background:rgba(34,197,94,.1);color:var(--accent);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:4px 12px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;}
+    body.paper .theory-chip{background:#f0fdf4;border-color:#86efac;color:#16a34a;}
+    /* comp */ .comp-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted);}
+    .comp-item:last-child{border-bottom:none;} .comp-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+    /* textarea */ textarea{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:11px;padding:12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;resize:vertical;width:100%;transition:border-color .2s;}
+    textarea:focus{border-color:var(--accent);} textarea::placeholder{color:var(--muted);}
+    body.paper textarea{background:#f8fafc;border-color:#e2e8f0;color:#0f172a;}
+    /* animations */ @keyframes slideIn{from{opacity:0;transform:translateX(22px);}to{opacity:1;transform:translateX(0);}} @keyframes fadeIn{from{opacity:0;}to{opacity:1;}} @keyframes revUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    .rev{animation:revUp .5s ease both;} .r1{animation-delay:.05s;} .r2{animation-delay:.1s;} .r3{animation-delay:.15s;} .r4{animation-delay:.2s;} .r5{animation-delay:.25s;} .r6{animation-delay:.3s;} .r7{animation-delay:.35s;} .r8{animation-delay:.4s;}
+    /* print */ @media print{.no-print{display:none!important;} body{background:#fff;color:#000;} .grid-bg{display:none;} .carousel-slide{display:grid!important;margin-bottom:28px;} .thumbs,.carousel-btn,.mode-tabs{display:none!important;} .mode-content{display:block!important;}}
+    body.paper .carousel-slide{display:grid!important;margin-bottom:24px;} body.paper .thumbs,.body.paper .carousel-btn{display:none!important;} body.paper .mode-content{display:block!important;} body.paper .mode-tabs{display:none!important;}
+    @media(max-width:768px){.carousel-slide{grid-template-columns:1fr!important;}.fields-grid{grid-template-columns:1fr!important;}}
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="no-print" style="position:fixed;top:1rem;right:1rem;z-index:50;display:flex;gap:8px;">
+    <button onclick="togglePaper()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;backdrop-filter:blur(8px);">📄 MODO PAPEL</button>
+    <button onclick="window.print()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;background:#22c55e;color:#0a0f1a;cursor:pointer;box-shadow:0 4px 12px rgba(34,197,94,.25);">🖨️ IMPRIMIR</button>
+  </div>
+
+  <main style="position:relative;z-index:10;max-width:900px;margin:0 auto;padding:2.5rem 1.25rem;">
+
+    <!-- HEADER -->
+    <header class="rev r1" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <img src="robotica/assets/mascota.png" style="width:70px;height:70px;object-fit:contain;" onerror="this.style.display='none'" alt="RIKISHI">
+        <div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+            <span class="badge" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3);">P01</span>
+            <span class="badge" style="background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3);">Electrónica</span>
+            <span class="badge" style="background:rgba(250,204,21,.15);color:#facc15;border:1px solid rgba(250,204,21,.3);">🟢 Básico</span>
+            
+          </div>
+          <h1 style="font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;font-style:italic;text-transform:uppercase;line-height:1.1;margin:0;">⚡ El multímetro y la Ley de Ohm</h1>
+          <p style="font-size:10px;font-family:'Space Mono',monospace;opacity:.4;margin:6px 0 0;letter-spacing:.12em;">Instrumentación básica · TinkerCAD + Físico</p>
+        </div>
+      </div>
+      <img src="robotica/assets/innaat.png" style="height:36px;opacity:.75;" onerror="this.style.display='none'" alt="Inna'at">
+    </header>
+
+    <!-- PROBLEMA DETONADOR -->
+    
+    <section class="rev r2" style="position:relative;overflow:hidden;border-radius:24px;padding:22px;border-left:8px solid #22c55e;background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.03));margin-bottom:1.5rem;">
+      <div style="position:absolute;top:4px;right:18px;font-size:72px;font-weight:900;opacity:.04;font-family:'Space Mono',monospace;line-height:1;pointer-events:none;">?</div>
+      <div class="sec-title" style="color:#22c55e;">⚡ Problema Detonador</div>
+      <p style="font-size:1.15rem;font-weight:700;font-style:italic;line-height:1.5;margin:0;">"¿Cómo puede un robot controlar la energía eléctrica para evitar que sus componentes se dañen o funcionen incorrectamente?"</p>
+    </section>
+
+    <!-- OBJETIVO + FÓRMULA -->
+    <div class="rev r2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem;">
+      <div class="card" style="padding:18px;">
+        <div class="sec-title" style="color:#60a5fa;">🎯 Objetivo</div>
+        <p style="font-size:13px;line-height:1.6;opacity:.8;margin:0;">Comprender el uso del multímetro para medir voltaje, corriente y resistencia, y aplicar la Ley de Ohm para analizar y validar circuitos eléctricos básicos.</p>
+      </div>
+      
+      <div class="card" style="padding:18px;">
+        <div class="sec-title" style="color:#22c55e;">ƒ Fórmula Clave</div>
+        <div class="formula-box">
+          <div class="eq">V = I × R</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARCO TEÓRICO -->
+    
+    <section class="rev r3 card" style="padding:22px;margin-bottom:1.5rem;border-left:4px solid #1F6B75;">
+      <div class="sec-title" style="color:#2dd4bf;">📖 Marco Teórico</div>
+      <p style="font-size:13px;line-height:1.65;opacity:.8;margin:0 0 14px;">La electricidad es el flujo de electrones a través de un material conductor. En los robots, este flujo permite que LEDs, sensores y motores funcionen. Tres conceptos fundamentales gobiernan este comportamiento: el Voltaje (fuerza que empuja electrones, en Volts), la Corriente (cantidad de electrones por segundo, en Amperes) y la Resistencia (oposición al flujo, en Ohms). La Ley de Ohm relaciona estas tres variables: V = I × R.</p>
+      <div class="theory-grid"><div class="theory-chip">⚡ Reflexión de luz infrarroja</div>
+<div class="theory-chip">⚡ Señal analógica vs digital</div>
+<div class="theory-chip">⚡ Umbral (threshold)</div>
+<div class="theory-chip">⚡ Pull-up / Pull-down</div>
+<div class="theory-chip">⚡ ADC del ESP32 (12 bits)</div></div>
+    </section>
+
+    <!-- APLICACIÓN EN ROBÓTICA -->
+    
+    <section class="rev r3" style="margin-bottom:1.5rem;">
+      <div class="robot-app">
+        <div class="sec-title" style="color:#60a5fa;">🤖 Aplicación en Robótica</div>
+        <p style="font-size:13px;opacity:.8;line-height:1.6;margin:0;">Este conocimiento permite evitar dañar componentes como LEDs, sensores o el ESP32. Un pin del ESP32 soporta máximo 40mA. Sin una resistencia calculada correctamente, el LED o el pin pueden quemarse permanentemente. También es la base para diagnosticar fallas en el seguidor de línea.</p>
+      </div>
+    </section>
+
+    <!-- COMPONENTES -->
+    
+    <section class="rev r4 card" style="padding:22px;margin-bottom:1.5rem;border-left:4px solid #facc15;">
+      <div class="sec-title" style="color:#facc15;">🔌 Componentes Necesarios</div>
+      <div><div class="comp-item"><span class="comp-dot"></span>Multímetro digital</div>
+<div class="comp-item"><span class="comp-dot"></span>Resistencias 220Ω, 1kΩ, 10kΩ</div>
+<div class="comp-item"><span class="comp-dot"></span>Batería 9V con conector</div>
+<div class="comp-item"><span class="comp-dot"></span>Protoboard</div>
+<div class="comp-item"><span class="comp-dot"></span>LEDs rojo, verde, amarillo</div>
+<div class="comp-item"><span class="comp-dot"></span>Cables jumper M-M</div></div>
+    </section>
+
+    <!-- FLUJO -->
+    <section class="rev r4 card" style="padding:22px;margin-bottom:1.5rem;">
+      <div class="sec-title" style="color:#22c55e;">→ Diagrama de Flujo</div>
+      <div class="flow"><div class="flow-step">Reconocimiento del Multímetro</div><div class="flow-step">🏁 Conclusión</div></div>
+    </section>
+
+    <!-- INSTRUCCIONES + CARRUSEL -->
+    <section class="rev r5" style="margin-bottom:1.5rem;">
+      <div class="sec-title" style="color:#22c55e;margin-bottom:14px;">📋 Instrucciones de la Práctica</div>
+
+      <!-- Mode tabs -->
+      <div class="mode-tabs no-print">
+        <button class="mode-tab tk active" onclick="setMode('tk')">💻 TinkerCAD</button>
+        <button class="mode-tab fis" onclick="setMode('fis')">🔧 Físico</button>
+      </div>
+      <div class="mode-content active" id="mode-tk">
+        <div class="card" style="padding:14px;margin-bottom:14px;border-left:4px solid #60a5fa;">
+          <p style="font-size:11px;font-family:'Space Mono',monospace;color:#60a5fa;margin-bottom:6px;">SIMULACIÓN — TINKERCAD / WOKWI</p>
+          <p style="font-size:12px;opacity:.7;margin:0;">Construye y prueba el circuito en simulación antes de pasar al hardware real. Verifica que los valores sean coherentes.</p>
+        </div>
+      </div>
+      <div class="mode-content" id="mode-fis">
+        <div class="card" style="padding:14px;margin-bottom:14px;border-left:4px solid #fb923c;">
+          <p style="font-size:11px;font-family:'Space Mono',monospace;color:#fb923c;margin-bottom:6px;">MONTAJE FÍSICO — PROTOBOARD</p>
+          <p style="font-size:12px;opacity:.7;margin:0;">Replica el circuito de la simulación en la protoboard con componentes reales. Verifica con el multímetro y registra los valores.</p>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:100%;"></div>
+      </div>
+
+      <!-- Nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="display:flex;gap:8px;" class="no-print">
+          <button class="carousel-btn" id="btn-prev" onclick="changeSlide(-1)" disabled>‹</button>
+          <button class="carousel-btn" id="btn-next" onclick="changeSlide(1)">›</button>
+        </div>
+        <div id="slide-indicator" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.1);color:#22c55e;">PARTE 1 / 1</div>
+      </div>
+
+      <!-- Slides -->
+      <div id="carousel" class="card" style="padding:20px;">
+        
+    <div class="carousel-slide active">
+      <div class="slide-img-col">
+        <img src="robotica/assets/P01.1.png" alt="Parte 1: Reconocimiento del Multímetro"
+          onerror="this.parentElement.innerHTML='<div class=\'img-placeholder\'>📷 P01.1.png</div>'">
+      </div>
+      <div class="slide-content-col">
+        <div class="slide-header" style="color:#22c55e;">Parte 1: Reconocimiento del Multímetro</div>
+        <div class="steps"><div class="step">
+        <div class="step-num" style="background:rgba(34,197,94,.08);color:#22c55e;">01</div>
+        <p>Observa el multímetro e identifica pantalla, perilla y terminales</p>
+      </div>
+<div class="step">
+        <div class="step-num" style="background:rgba(34,197,94,.08);color:#22c55e;">02</div>
+        <p>Ubica las entradas: COM (negro), VΩmA (rojo) y 10A</p>
+      </div>
+<div class="step">
+        <div class="step-num" style="background:rgba(34,197,94,.08);color:#22c55e;">03</div>
+        <p>Gira la perilla a V⎓ (voltaje corriente directa)</p>
+      </div></div>
+        
+      <div class="slide-fields" style="border:1px solid rgba(34,197,94,.2);background:rgba(34,197,94,.08);">
+        <div style="font-size:9px;font-family:'Space Mono',monospace;color:#22c55e;margin-bottom:10px;font-weight:700;">📐 REGISTRA TUS DATOS</div>
+        <div class="fields-grid">
+          <div>
+              <label style="font-size:9px;opacity:.5;display:block;margin-bottom:4px;">Batería nominal (V)</label>
+              <input type="text" value="9.0" style="width:100%;font-family:'Space Mono',monospace;font-size:12px;">
+            </div><div>
+              <label style="font-size:9px;opacity:.5;display:block;margin-bottom:4px;">Voltaje medido (V)</label>
+              <input type="text" value="0.0" style="width:100%;font-family:'Space Mono',monospace;font-size:12px;">
+            </div>
+        </div>
+      </div>
+      </div>
+    </div>
+      </div>
+
+      <!-- Thumbs -->
+      <div class="thumbs no-print" id="thumbnails">
+        <div class="thumb active" onclick="goToSlide(0)">P1</div>
+      </div>
+    </section>
+
+    <!-- TABLA RESULTADOS -->
+    <section class="rev r6 card" style="padding:22px;margin-bottom:1.5rem;">
+      <div class="sec-title" style="opacity:.65;">📊 Tabla de Resultados</div>
+      <div style="overflow-x:auto;">
+        <table class="rtable">
+          <thead><tr>
+            <th>Circuito / Experimento</th>
+            <th>Valor teórico</th>
+            <th>Valor calculado</th>
+            <th>Valor medido</th>
+            <th>% Error</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;opacity:.9;">Experimento 1</td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="%"></td>
+            </tr>
+<tr>
+              <td style="font-weight:600;opacity:.9;">Experimento 2</td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="%"></td>
+            </tr>
+<tr>
+              <td style="font-weight:600;opacity:.9;">Experimento 3</td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="—"></td>
+              <td><input type="text" placeholder="%"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ERRORES COMUNES -->
+    
+    <section class="rev r6" style="margin-bottom:1.5rem;">
+      <div class="sec-title" style="color:#f87171;margin-bottom:12px;">⚠️ Errores Comunes — Evítalos</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;"><div class="err-card">
+      <div class="err-icon">✕</div>
+      <div><div class="err-title">Medir corriente en paralelo</div><p>Quema el fusible del multímetro. La corriente siempre va en SERIE.</p></div>
+    </div>
+<div class="err-card">
+      <div class="err-icon">✕</div>
+      <div><div class="err-title">LED sin resistencia</div><p>Sin resistencia la corriente es ilimitada y el LED se quema en segundos.</p></div>
+    </div>
+<div class="err-card">
+      <div class="err-icon">✕</div>
+      <div><div class="err-title">Perilla en posición incorrecta</div><p>Medir voltaje con perilla en corriente puede dañar el multímetro.</p></div>
+    </div>
+<div class="err-card">
+      <div class="err-icon">✕</div>
+      <div><div class="err-title">Polaridad invertida del LED</div><p>El ánodo (+) es la patita larga. Invertirlo evita que el LED encienda.</p></div>
+    </div></div>
+    </section>
+
+    <!-- RETOS -->
+    
+    <section class="rev r7" style="margin-bottom:1.5rem;">
+      <div class="sec-title" style="opacity:.6;margin-bottom:12px;">🏆 Retos</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+        <div class="reto-int">
+          <span class="badge" style="background:rgba(168,85,247,.2);color:#c084fc;border:1px solid rgba(168,85,247,.3);margin-bottom:10px;">⭐ Intermedio</span>
+          <p style="font-size:13px;opacity:.85;line-height:1.5;margin:0;">Diseña un circuito donde el LED no se queme y tenga el brillo adecuado. Calcula tú mismo la resistencia necesaria para que circule exactamente 20mA: R = (V_bat − V_LED) ÷ I_LED.</p>
+        </div>
+        <div class="reto-adv">
+          <span class="badge" style="background:rgba(245,158,11,.2);color:#fbbf24;border:1px solid rgba(245,158,11,.3);margin-bottom:10px;">⭐⭐ Avanzado</span>
+          <p style="font-size:13px;opacity:.85;line-height:1.5;margin:0;">Calcula el error entre teórico y medido y explica por qué existe. %Error = |(Teórico − Real)| ÷ Teórico × 100. Menciona mínimo 3 causas (tolerancia de componentes, resistencia interna, calibración del instrumento).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONCLUSIÓN -->
+    <section class="rev r8 card" style="padding:22px;margin-bottom:2rem;border-left:4px solid #22c55e;">
+      <div class="sec-title" style="color:#22c55e;">✍️ Conclusión de la Misión</div>
+      <p style="font-size:11px;opacity:.35;margin:0 0 10px;font-family:'Space Mono',monospace;">Reflexiona: ¿qué aprendiste? ¿cómo se relaciona con el seguidor de línea?</p>
+      <textarea rows="5" placeholder="Los cálculos teóricos no siempre coinciden exactamente con la realidad, pero permiten predecir el comportamiento del circuito y evitar fallas. En el seguidor de línea esto es clave para proteger el ESP32 y los sensores."></textarea>
+    </section>
+
+    <!-- ENTREGABLE + CRITERIO -->
+    
+    <div class="rev r8" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:2rem;">
+      <div class="card" style="padding:18px;border-left:4px solid #a855f7;">
+        <div class="sec-title" style="color:#a855f7;">📤 Entregable</div>
+        <p style="font-size:13px;opacity:.8;line-height:1.5;margin:0;">Hoja de mediciones: 3 circuitos con cálculo vs medición real + tabla de % de error</p>
+      </div>
+      <div class="card" style="padding:18px;border-left:4px solid #22c55e;">
+        <div class="sec-title" style="color:#22c55e;">✅ Criterio de Éxito</div>
+        <p style="font-size:13px;opacity:.8;line-height:1.5;margin:0;">Tu práctica pasa si tienes los 3 circuitos medidos, los valores teóricos calculados, el % de error en cada uno y una conclusión escrita de mínimo 3 líneas.</p>
+      </div>
+    </div>
+
+    <!-- CONSEJO -->
+    
+    <div class="rev r8" style="background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.04));border:1.5px solid rgba(245,158,11,.3);border-radius:16px;padding:18px;display:flex;gap:14px;align-items:flex-start;margin-bottom:2rem;">
+      <div style="width:38px;height:38px;border-radius:10px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💡</div>
+      <div>
+        <strong style="display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#d97706;margin-bottom:4px;">Consejo</strong>
+        <p style="font-size:13px;color:rgba(255,255,255,.7);margin:0;line-height:1.5;">Antes de cargar el código, verifica que el sensor esté a 1–2 cm de la superficie. Si las lecturas son inestables, ajusta el potenciómetro lentamente hasta que el LED indicador responda con claridad.</p>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="display:flex;align-items:center;justify-content:space-between;opacity:.25;hover:opacity:.7;transition:opacity .3s;padding-top:1.5rem;border-top:1px solid var(--border);">
+      <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.4em;text-transform:uppercase;">System Protocol · Inna'at · RIKISHI · RoboRAVE 2025</span>
+      <img src="robotica/assets/rikishi.png" style="height:28px;filter:grayscale(1);" onerror="this.style.display='none'" alt="RIKISHI">
+    </footer>
+
+  </main>
+
+  <script>
+    lucide.createIcons();
+    const slides = document.querySelectorAll('.carousel-slide');
+    const thumbs = document.querySelectorAll('.thumb');
+    const indicator = document.getElementById('slide-indicator');
+    const fill = document.getElementById('progress-fill');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    let current = 0;
+
+    function goToSlide(n) {
+      slides[current].classList.remove('active');
+      thumbs[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      thumbs[current].classList.add('active');
+      indicator.textContent = 'PARTE ' + (current+1) + ' / ' + slides.length;
+      fill.style.width = ((current+1)/slides.length*100) + '%';
+      btnPrev.disabled = current === 0;
+      btnNext.disabled = current === slides.length - 1;
+    }
+    function changeSlide(dir) { goToSlide(current + dir); }
+    function setMode(m) {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mode-content').forEach(c => c.classList.remove('active'));
+      document.querySelector('.mode-tab.'+m).classList.add('active');
+      document.getElementById('mode-'+m).classList.add('active');
+    }
+    function togglePaper() { document.body.classList.toggle('paper'); }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') changeSlide(1);
+      if (e.key === 'ArrowLeft') changeSlide(-1);
+    });
+  </script>
+</body>
+</html>
